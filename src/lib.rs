@@ -36,10 +36,10 @@ pub mod rand {
                     self.seed as f64 / RAND_MAX
                 }
                 Style::Gauss => {
-                    Rand::gauss(&mut self.seed, 25)
+                    Rand::gauss(&mut self.seed, 25) / RAND_MAX
                 }
                 Style::BMrand => {
-                    Rand::bmrand(&mut self.seed, &mut self.attachment)
+                    Rand::bmrand(&mut self.seed, &mut self.attachment) / RAND_MAX
                 }
                 _ => {
                     self.seed = Rand::lazy(self.seed);
@@ -71,7 +71,8 @@ pub mod rand {
         }
         
         fn bmrand(seed: &mut i64, attachment: &mut Vec<f64>) -> f64 {
-            let mut z: f64 = 0.0;
+            // FIXME: value assigned to `z` is never read
+            let mut z = 0.0;
             if attachment.len() == 0 {
                 attachment.push(0.0);
                 attachment.push(0.0);
@@ -92,7 +93,9 @@ pub mod rand {
         }
         
         fn marsaglia() -> f64 {
-            0.0
+            let mut x: f64 = 0.0;
+            
+            x
         }
 
         fn lazy(seed: i64) -> i64 {
