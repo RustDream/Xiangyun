@@ -36,7 +36,7 @@ pub mod rand {
                     self.seed as f64 / RAND_MAX
                 }
                 Style::Gauss => {
-                    Rand::gauss(self.seed, 25)
+                    Rand::gauss(&mut self.seed, 25)
                 }
                 _ => {
                     self.seed = Rand::lazy(self.seed);
@@ -56,11 +56,11 @@ pub mod rand {
             if test > 0 { test } else { test + m }
         }
         
-        fn gauss(mut seed: i64, nsum: i64) -> f64 {
+        fn gauss(seed: &mut i64, nsum: i64) -> f64 {
             let mut x = 0.0;
             for _ in 0..nsum {
-                seed = Rand::pmrand(seed, 48271);
-                x += seed as f64/ RAND_MAX;
+                *seed = Rand::pmrand(*seed, 48271);
+                x += *seed as f64/ RAND_MAX;
             }
             x -= nsum as f64 / 2.0;
             x /= (nsum as f64 / 12.0).sqrt();
