@@ -19,4 +19,8 @@ fn main() {
     println!("Style::BMrand");
     println!("{}", foo.get_rand());
     println!("{}", foo.get_rand());
+	let mut foo = Rand::new(Style::Marsaglia);
+    println!("Style::Marsaglia");
+    println!("{}", foo.get_rand());
+    println!("{}", foo.get_rand());
 }

@@ -41,6 +41,9 @@ pub mod rand {
                 Style::BMrand => {
                     Rand::bmrand(&mut self.seed, &mut self.attachment) / RAND_MAX
                 }
+				Style::Marsaglia => {
+					Rand::marsaglia(&mut self.seed, &mut self.attachment) / RAND_MAX
+				}
                 _ => {
                     self.seed = Rand::lazy(self.seed);
                     self.seed as f64 / RAND_MAX
@@ -92,9 +95,32 @@ pub mod rand {
             z
         }
         
-        fn marsaglia() -> f64 {
+        fn marsaglia(seed: &mut i64, attachment: &mut Vec<f64>) -> f64 {
             let mut x: f64 = 0.0;
-            
+            if attachment.len() == 0 {
+                attachment.push(0.0);
+                attachment.push(0.0);
+                attachment.push(0.0);
+				attachment.push(0.0);
+            }
+			if attachment[3] == 0.0 {
+				loop {
+					*seed = Rand::pmrand(*seed, 48271);
+					let u1 = *seed as f64 / RAND_MAX;
+					*seed = Rand::pmrand(*seed, 48271);
+					let u2 = *seed as f64 / RAND_MAX;
+					attachment[0] = 2.0 * u1 - 1.0;
+					attachment[1] = 2.0 * u2 - 1.0;
+					attachment[2] = attachment[0] * attachment[0] + attachment[1] * attachment[1];
+					if attachment[2] < 1.0 && attachment[2] != 0.0 {
+						break;
+					}
+				}
+				x = attachment[0] * (-2.0 * attachment[2].log(10.0) / attachment[2]);
+			} else {
+				x = attachment[1] * (-2.0 * attachment[2].log(10.0) / attachment[2]);
+			}
+			attachment[3] = 1.0 - attachment[3];
             x
         }
 
