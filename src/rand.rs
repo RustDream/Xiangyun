@@ -1,7 +1,7 @@
 use std::time::SystemTime;
 
 const PI: f64 = 3.141592654;
-const RAND_MAX: f64 = 2147483647.0;
+pub const RAND_MAX: f64 = 2147483647.0;
 
 pub enum Style {
     PMrand,
@@ -19,6 +19,7 @@ pub struct Rand {
 }
 
 impl Rand {
+    /// Is used to create a new random sequence core
     pub fn new(style: Style) -> Self {
         Rand {
             style: style,
@@ -26,11 +27,13 @@ impl Rand {
             attachment: Vec::new(),
         }
     }
-
+    
+    /// Is used to generate a fixed sequence
     pub fn srand(&mut self, seed: i64) {
         self.seed = seed;
     }
-
+    
+    /// Is used to set random seed
     pub fn lazy_srand(&mut self) {
         let sys_time = SystemTime::now();
         let foo_string = format!("{:?}", sys_time);
@@ -106,7 +109,7 @@ impl Rand {
 
     fn bmrand(seed: &mut i64, attachment: &mut Vec<f64>) -> f64 {
         // FIXME: value assigned to `z` is never read
-		#[allow(unused_assignments)]
+        #[allow(unused_assignments)]
         let mut z = 0.0;
         if attachment.len() == 0 {
             attachment.push(0.0);
@@ -129,7 +132,7 @@ impl Rand {
 
     fn marsaglia(seed: &mut i64, attachment: &mut Vec<f64>) -> f64 {
         // FIXME: value assigned to `x` is never read
-		#[allow(unused_assignments)]
+        #[allow(unused_assignments)]
         let mut x = 0.0;
         if attachment.len() == 0 {
             attachment.push(0.0);
@@ -168,6 +171,26 @@ impl Rand {
     }
 }
 
+/// A macro that generates random numbers
+/// 
+/// #Example
+/// 
+/// ```Rust
+/// #[macro_use]
+/// extern crate xiangyun;
+/// use xiangyun::{Rand, Style};
+/// fn main() {
+///     println!("Style::Lazy");
+///     let foo = rand!(2);
+///     println!("{}, {}", foo[0], foo[1]);
+///     println!("Style::PMrand");
+///     let foo = rand!(Style::PMrand, 2);
+///     println!("{}, {}", foo[0], foo[1]);
+///     println!("Style::Gauss");
+///     let foo = rand!(Style::Gauss, 2);
+///     println!("{}, {}", foo[0], foo[1]);
+/// }
+/// ```
 #[macro_export]
 macro_rules! rand {
     () => {{
@@ -175,27 +198,27 @@ macro_rules! rand {
         foo.lazy_srand();
         foo.get_rand()
     }};
-	($num: expr) => {{
-		let mut foo = Rand::new(Style::Lazy);
-		let mut bar: Vec<f64> = Vec::new();
+    ($num: expr) => {{
+        let mut foo = Rand::new(Style::Lazy);
+        let mut bar: Vec<f64> = Vec::new();
         foo.lazy_srand();
-		for _ in 0..$num {
-			bar.push(foo.get_rand());
-		}
-		bar
-	}};
+        for _ in 0..$num {
+            bar.push(foo.get_rand());
+        }
+        bar
+    }};
     ($style: path) => {{
         let mut foo = Rand::new($style);
         foo.lazy_srand();
         foo.get_rand()
     }};
-	($style: path, $num: expr) => {{
-		let mut foo = Rand::new($style);
-		let mut bar: Vec<f64> = Vec::new();
+    ($style: path, $num: expr) => {{
+        let mut foo = Rand::new($style);
+        let mut bar: Vec<f64> = Vec::new();
         foo.lazy_srand();
-		for _ in 0..$num {
-			bar.push(foo.get_rand());
-		}
-		bar
-	}};
+        for _ in 0..$num {
+            bar.push(foo.get_rand());
+        }
+        bar
+    }};
 }

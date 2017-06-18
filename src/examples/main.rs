@@ -1,12 +1,12 @@
 #[macro_use]
 extern crate xiangyun;
 
-use xiangyun::{Rand, Style};
+use xiangyun::{Rand, Style, RAND_MAX};
 
 fn main() {
     println!("Style::Lazy");
     let foo = rand!(2);
-    println!("{}, {}", foo[0], foo[1]);
+    println!("{}, {}", foo[0] * RAND_MAX, foo[1] * RAND_MAX);
     println!("Style::PMrand");
     let foo = rand!(Style::PMrand, 2);
     println!("{}, {}", foo[0], foo[1]);
