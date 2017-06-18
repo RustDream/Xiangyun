@@ -3,6 +3,7 @@ name = "xiangyun"
 version = "0.0.3"
 license = "MIT"
 authors = ["3442853561<3442853561@qq.com>"]
+keywords = ["random", "rand"]
 
 description = "Xiangyun is the crate for random with Rust"
 repository = "https://github.com/RustDream/Xiangyun"

@@ -1,3 +1,5 @@
+use std::time::SystemTime;
+
 const PI: f64 = 3.141592654;
 const RAND_MAX: f64 = 2147483647.0;
 
@@ -26,6 +28,30 @@ impl Rand {
     }
 
     pub fn srand(&mut self, seed: i64) {
+        self.seed = seed;
+    }
+
+    pub fn lazy_srand(&mut self) {
+        let sys_time = SystemTime::now();
+        let foo_string = format!("{:?}", sys_time);
+        let mut seed: i64 = 0;
+        let mut flag = false;
+        for num in foo_string.chars() {
+            match num {
+                e @ '0'...'9' => {
+                    flag = true;
+                    seed = seed * 10 + (e as u8 - 48) as i64;
+                    if seed >= i32::max_value() as i64 {
+                        break;
+                    }
+                }
+                _ => {
+                    if flag {
+                        break;
+                    }
+                }
+            }
+        }
         self.seed = seed;
     }
 

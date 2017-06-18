@@ -4,7 +4,7 @@ use xiangyun::{Rand, Style};
 
 fn main() {
     let mut foo = Rand::new(Style::Lazy);
-    foo.srand(3);
+    foo.lazy_srand();
     println!("Style::Lazy");
     println!("{}", foo.get_rand());
     println!("{}", foo.get_rand());
