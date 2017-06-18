@@ -55,7 +55,7 @@ impl Rand {
         if seed > 0 {
             match self.style {
                 Style::Lazy | Style::PMrand => self.seed = seed,
-				Style::Crand => self.seed = 1,
+                Style::Crand => self.seed = 1,
                 _ => self.seed = seed >> 32,
             }
         } else {
@@ -71,7 +71,9 @@ impl Rand {
             }
             Style::Gauss => (Rand::gauss(&mut self.seed, 25) / RAND_MAX).abs(),
             Style::BMrand => (Rand::bmrand(&mut self.seed, &mut self.attachment) / RAND_MAX).abs(),
-            Style::Marsaglia => (Rand::marsaglia(&mut self.seed, &mut self.attachment) / RAND_MAX).abs(),
+            Style::Marsaglia => {
+                (Rand::marsaglia(&mut self.seed, &mut self.attachment) / RAND_MAX).abs()
+            }
             Style::Crand => (Rand::crand(&mut self.seed) as f64 / RAND_MAX).abs(),
             _ => {
                 self.seed = Rand::lazy(self.seed);
@@ -161,7 +163,7 @@ impl Rand {
     }
 
     fn crand(seed: &mut i64) -> i64 {
-		*seed = *seed * 1103515245 + 12345;
+        *seed = *seed * 1103515245 + 12345;
         (*seed >> 16) & (RAND_MAX as i64)
     }
 }
