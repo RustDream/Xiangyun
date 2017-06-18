@@ -1,5 +1,5 @@
 const PI: f64 = 3.141592654;
-const RAND_MAX: f64  = 2147483647.0;
+const RAND_MAX: f64 = 2147483647.0;
 
 pub enum Style {
     PMrand,
@@ -35,18 +35,10 @@ impl Rand {
                 self.seed = Rand::pmrand(self.seed, 48271);
                 self.seed as f64 / RAND_MAX
             }
-            Style::Gauss => {
-                Rand::gauss(&mut self.seed, 25) / RAND_MAX
-            }
-            Style::BMrand => {
-                Rand::bmrand(&mut self.seed, &mut self.attachment) / RAND_MAX
-            }
-            Style::Marsaglia => {
-                Rand::marsaglia(&mut self.seed, &mut self.attachment) / RAND_MAX
-            }
-            Style::Crand => {
-                Rand::crand(&mut self.seed) as f64 / RAND_MAX
-            }
+            Style::Gauss => Rand::gauss(&mut self.seed, 25) / RAND_MAX,
+            Style::BMrand => Rand::bmrand(&mut self.seed, &mut self.attachment) / RAND_MAX,
+            Style::Marsaglia => Rand::marsaglia(&mut self.seed, &mut self.attachment) / RAND_MAX,
+            Style::Crand => Rand::crand(&mut self.seed) as f64 / RAND_MAX,
             _ => {
                 self.seed = Rand::lazy(self.seed);
                 self.seed as f64 / RAND_MAX
@@ -69,7 +61,7 @@ impl Rand {
         let mut x = 0.0;
         for _ in 0..nsum {
             *seed = Rand::pmrand(*seed, 48271);
-            x += *seed as f64/ RAND_MAX;
+            x += *seed as f64 / RAND_MAX;
         }
         x -= nsum as f64 / 2.0;
         x /= (nsum as f64 / 12.0).sqrt();
@@ -131,7 +123,7 @@ impl Rand {
     fn lazy(seed: i64) -> i64 {
         Rand::pmrand(seed, 16807)
     }
-    
+
     fn crand(seed: &mut i64) -> i64 {
         *seed = *seed * 1103515245 + 12345;
         (*seed >> 16) & (RAND_MAX as i64)
