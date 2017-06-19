@@ -84,6 +84,14 @@ impl Rand {
             }
         }
     }
+    
+    pub fn lazy_rand(&mut self, min: i64, max: i64) -> i64 {
+        min + (self.get_rand() * (max - min + 1) as f64) as i64
+    }
+    
+    pub fn lazy_randf(&mut self, min: f64, max: f64) -> f64 {
+        min + self.get_rand() * (max - min + 1.0)
+    }
 
 
     fn pmrand(seed: i64, a: i64) -> i64 {
