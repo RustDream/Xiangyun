@@ -1,25 +1,21 @@
-#[macro_use]
 extern crate xiangyun;
 
-use xiangyun::{Rand, Style, RAND_MAX};
+use xiangyun::{Rand, Style};
+use std::{thread, time};
 
 fn main() {
-    println!("Style::Lazy");
-    let foo = rand!(2);
-    println!("{}, {}", foo[0] * RAND_MAX, foo[1] * RAND_MAX);
-    println!("Style::PMrand");
-    let foo = rand!(Style::PMrand, 2);
-    println!("{}, {}", foo[0], foo[1]);
-    println!("Style::Gauss");
-    let foo = rand!(Style::Gauss, 2);
-    println!("{}, {}", foo[0], foo[1]);
-    println!("Style::BMrand");
-    let foo = rand!(Style::BMrand, 2);
-    println!("{}, {}", foo[0], foo[1]);
-    println!("Style::Marsaglia");
-    let foo = rand!(Style::Marsaglia, 2);
-    println!("{}, {}", foo[0], foo[1]);
-    println!("Style::Crand");
-    let foo = rand!(Style::Crand, 2);
-    println!("{}, {}", foo[0], foo[1]);
+    let millis = time::Duration::from_millis(1000);
+    let mut foo = Rand::new(Style::Ryus);
+    foo.lazy_srand();
+    println!("Ryus: {}", foo.lazy_rand(1,100));
+    thread::sleep(millis);
+    foo.lazy_srand();
+    println!("Ryus: {}", foo.lazy_rand(1,100));
+    println!("-------------------------------------------------------");
+    let mut foo = Rand::new(Style::PMrand);
+    foo.lazy_srand();
+    println!("PMrand: {}", foo.lazy_rand(1,100));
+    thread::sleep(millis);
+    foo.lazy_srand();
+    println!("PMrand: {}", foo.lazy_rand(1,100));
 }

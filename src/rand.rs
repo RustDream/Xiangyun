@@ -10,6 +10,7 @@ pub enum Style {
     Marsaglia,
     Lazy,
     Crand,
+    Ryus,
 }
 
 pub struct Rand {
@@ -57,7 +58,7 @@ impl Rand {
         }
         if seed > 0 {
             match self.style {
-                Style::Lazy | Style::PMrand => self.seed = seed,
+                Style::Lazy | Style::PMrand | Style::Ryus => self.seed = seed,
                 Style::Crand => self.seed = 1,
                 _ => self.seed = seed >> 32,
             }
@@ -70,7 +71,7 @@ impl Rand {
         match self.style {
             Style::PMrand => {
                 self.seed = Rand::pmrand(self.seed, 48271);
-                self.seed as f64 / RAND_MAX.abs()
+                (self.seed as f64 / RAND_MAX).abs()
             }
             Style::Gauss => (Rand::gauss(&mut self.seed, 25) / RAND_MAX).abs(),
             Style::BMrand => (Rand::bmrand(&mut self.seed, &mut self.attachment) / RAND_MAX).abs(),
@@ -78,6 +79,7 @@ impl Rand {
                 (Rand::marsaglia(&mut self.seed, &mut self.attachment) / RAND_MAX).abs()
             }
             Style::Crand => (Rand::crand(&mut self.seed) as f64 / RAND_MAX).abs(),
+            Style::Ryus => (Rand::ryus(&mut self.seed) as f64 / RAND_MAX).abs(),
             _ => {
                 self.seed = Rand::lazy(self.seed);
                 (self.seed as f64 / RAND_MAX).abs()
@@ -86,14 +88,14 @@ impl Rand {
     }
     
     pub fn lazy_rand(&mut self, min: i64, max: i64) -> i64 {
-        min + (self.get_rand() * (max - min + 1) as f64) as i64
+        min + ((max - min + 1) as f64 * self.get_rand()) as i64
     }
     
     pub fn lazy_randf(&mut self, min: f64, max: f64) -> f64 {
         min + self.get_rand() * (max - min + 1.0)
     }
 
-
+    #[inline]
     fn pmrand(seed: i64, a: i64) -> i64 {
         let m = RAND_MAX as i64;
         let q = m / a;
@@ -176,6 +178,16 @@ impl Rand {
     fn crand(seed: &mut i64) -> i64 {
         *seed = *seed * 1103515245 + 12345;
         (*seed >> 16) & (RAND_MAX as i64)
+    }
+    
+    fn ryus(seed: &mut i64) -> i64 {
+        *seed = Rand::pmrand(*seed, 48271);
+        let i = *seed as f64;
+        *seed = Rand::pmrand(*seed, 48271);
+        let j = *seed as f64;
+        *seed = Rand::pmrand(*seed, 48271);
+        let k = (*seed as f64 / RAND_MAX).abs();
+        (i * k + j * (1.0 - k)) as i64
     }
 }
 
