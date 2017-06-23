@@ -3,6 +3,30 @@ use std::time::SystemTime;
 const PI: f64 = 3.141592654;
 pub const RAND_MAX: f64 = 2147483647.0;
 
+/// #Example
+///
+/// '''Rust
+/// extern crate xiangyun;
+///
+/// use xiangyun::{Rand, Style};
+/// use std::{thread, time};
+///
+/// fn main() {
+///     let millis = time::Duration::from_millis(1000);
+///     let mut foo = Rand::new(Style::Ryus);
+///     foo.lazy_srand();
+///     println!("Ryus: {}", foo.lazy_rand(1, 100));
+///     thread::sleep(millis);
+///     foo.lazy_srand();
+///     println!("Ryus: {}", foo.lazy_rand(1, 100));
+///     println!("-------------------------------------------------------");
+///     let mut foo = Rand::new(Style::PMrand);
+//     foo.lazy_srand();
+///     println!("PMrand: {}", foo.lazy_rand(1, 100));
+///     thread::sleep(millis);
+///     foo.lazy_srand();
+///     println!("PMrand: {}", foo.lazy_rand(1, 100));
+/// }
 pub enum Style {
     PMrand,
     Gauss,
@@ -11,6 +35,7 @@ pub enum Style {
     Lazy,
     Crand,
     Ryus,
+    Dalton,
 }
 
 pub struct Rand {
@@ -58,28 +83,33 @@ impl Rand {
         }
         if seed > 0 {
             match self.style {
-                Style::Lazy | Style::PMrand | Style::Ryus => self.seed = seed,
                 Style::Crand => self.seed = 1,
-                _ => self.seed = seed >> 32,
+                _ => self.seed = seed,
             }
         } else {
             self.seed = 1;
         }
     }
 
-    pub fn get_rand(&mut self) -> f64 {
+    pub fn get_rand(&mut self, attachment: Option<u64>) -> f64 {
+        let mut a = 25;
+        match attachment {
+            Some(e) => a = e,
+            _ => {}
+        }
         match self.style {
             Style::PMrand => {
-                self.seed = Rand::pmrand(self.seed, 48271);
+                self.seed = Rand::pmrand(self.seed, a as i64);
                 (self.seed as f64 / RAND_MAX).abs()
             }
-            Style::Gauss => (Rand::gauss(&mut self.seed, 25) / RAND_MAX).abs(),
+            Style::Gauss => (Rand::gauss(&mut self.seed, a) / RAND_MAX).abs(),
             Style::BMrand => (Rand::bmrand(&mut self.seed, &mut self.attachment) / RAND_MAX).abs(),
             Style::Marsaglia => {
                 (Rand::marsaglia(&mut self.seed, &mut self.attachment) / RAND_MAX).abs()
             }
             Style::Crand => (Rand::crand(&mut self.seed) as f64 / RAND_MAX).abs(),
             Style::Ryus => (Rand::ryus(&mut self.seed) as f64 / RAND_MAX).abs(),
+            Style::Dalton => (Rand::dalton(&mut self.seed, a) / RAND_MAX).abs(),
             _ => {
                 self.seed = Rand::lazy(self.seed);
                 (self.seed as f64 / RAND_MAX).abs()
@@ -88,11 +118,21 @@ impl Rand {
     }
 
     pub fn lazy_rand(&mut self, min: i64, max: i64) -> i64 {
-        min + ((max - min + 1) as f64 * self.get_rand()) as i64
+        let gap = max - min + 1;
+        match self.style {
+            Style::PMrand => min + (gap as f64 * self.get_rand(Some(48271))) as i64,
+            Style::Gauss | Style::Dalton => min + (gap as f64 * self.get_rand(Some((gap as u64)))) as i64,
+            _ => min + (gap as f64 * self.get_rand(None)) as i64,
+        }
     }
 
     pub fn lazy_randf(&mut self, min: f64, max: f64) -> f64 {
-        min + self.get_rand() * (max - min + 1.0)
+        let gap = max - min + 1.0;
+        match self.style {
+            Style::PMrand => min + self.get_rand(Some(48271)) * gap,
+            Style::Gauss | Style::Dalton => min + self.get_rand(Some((gap as u64))) * gap,
+            _ => min + self.get_rand(None) * gap,
+        }
     }
 
     #[inline]
@@ -106,7 +146,7 @@ impl Rand {
         if test > 0 { test } else { test + m }
     }
 
-    fn gauss(seed: &mut i64, nsum: i64) -> f64 {
+    fn gauss(seed: &mut i64, nsum: u64) -> f64 {
         let mut x = 0.0;
         for _ in 0..nsum {
             *seed = Rand::pmrand(*seed, 48271);
@@ -180,6 +220,17 @@ impl Rand {
         let k = (*seed as f64 / RAND_MAX).abs();
         (i * k + j * (1.0 - k)) as i64
     }
+
+    fn dalton(seed: &mut i64, nsum: u64) -> f64 {
+        let mut x = 0.0;
+        for _ in 0..nsum {
+            *seed = Rand::ryus(seed);
+            x += *seed as f64 / RAND_MAX;
+        }
+        x -= nsum as f64 / 2.0;
+        x /= (nsum as f64 / 12.0).sqrt();
+        x
+    }
 }
 
 /// A macro that generates random numbers
@@ -207,28 +258,28 @@ macro_rules! rand {
     () => {{
         let mut foo = Rand::new(Style::Lazy);
         foo.lazy_srand();
-        foo.get_rand()
+        foo.get_rand(None)
     }};
     ($num: expr) => {{
         let mut foo = Rand::new(Style::Lazy);
         let mut bar: Vec<f64> = Vec::new();
         foo.lazy_srand();
         for _ in 0..$num {
-            bar.push(foo.get_rand());
+            bar.push(foo.get_rand(None));
         }
         bar
     }};
     ($style: path) => {{
         let mut foo = Rand::new($style);
         foo.lazy_srand();
-        foo.get_rand()
+        foo.get_rand(None)
     }};
     ($style: path, $num: expr) => {{
         let mut foo = Rand::new($style);
         let mut bar: Vec<f64> = Vec::new();
         foo.lazy_srand();
         for _ in 0..$num {
-            bar.push(foo.get_rand());
+            bar.push(foo.get_rand(None));
         }
         bar
     }};
