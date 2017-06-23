@@ -5,7 +5,7 @@ pub const RAND_MAX: f64 = 2147483647.0;
 
 /// #Example
 ///
-/// '''Rust
+/// ```Rust
 /// extern crate xiangyun;
 ///
 /// use xiangyun::{Rand, Style};
@@ -21,12 +21,13 @@ pub const RAND_MAX: f64 = 2147483647.0;
 ///     println!("Ryus: {}", foo.lazy_rand(1, 100));
 ///     println!("-------------------------------------------------------");
 ///     let mut foo = Rand::new(Style::PMrand);
-//     foo.lazy_srand();
+///     foo.lazy_srand();
 ///     println!("PMrand: {}", foo.lazy_rand(1, 100));
 ///     thread::sleep(millis);
 ///     foo.lazy_srand();
 ///     println!("PMrand: {}", foo.lazy_rand(1, 100));
 /// }
+/// ```
 pub enum Style {
     PMrand,
     Gauss,
