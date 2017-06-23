@@ -28,12 +28,12 @@ impl Rand {
             attachment: Vec::new(),
         }
     }
-    
+
     /// Is used to generate a fixed sequence
     pub fn srand(&mut self, seed: i64) {
         self.seed = seed;
     }
-    
+
     /// Is used to set random seed
     pub fn lazy_srand(&mut self) {
         let sys_time = SystemTime::now();
@@ -86,11 +86,11 @@ impl Rand {
             }
         }
     }
-    
+
     pub fn lazy_rand(&mut self, min: i64, max: i64) -> i64 {
         min + ((max - min + 1) as f64 * self.get_rand()) as i64
     }
-    
+
     pub fn lazy_randf(&mut self, min: f64, max: f64) -> f64 {
         min + self.get_rand() * (max - min + 1.0)
     }
@@ -118,39 +118,32 @@ impl Rand {
     }
 
     fn bmrand(seed: &mut i64, attachment: &mut Vec<f64>) -> f64 {
-        // FIXME: value assigned to `z` is never read
-        #[allow(unused_assignments)]
-        let mut z = 0.0;
         if attachment.len() == 0 {
             attachment.push(0.0);
             attachment.push(0.0);
             attachment.push(0.0);
         }
-        if attachment[2] == 0.0 {
+        attachment[2] = 1.0 - attachment[2];
+        if attachment[2] != 0.0 {
             *seed = Rand::pmrand(*seed, 48271);
             attachment[0] = (*seed as f64 + 1.0) / (RAND_MAX + 2.0);
             *seed = Rand::pmrand(*seed, 48271);
             attachment[1] = *seed as f64 / (RAND_MAX + 1.0);
-            z = (2.0 * PI * attachment[1]).sin();
+            (2.0 * PI * attachment[1]).sin() * (-2.0 * attachment[0].log(10.0)).sqrt()
         } else {
-            z = (2.0 * PI * attachment[1]).cos();
+            (2.0 * PI * attachment[1]).cos() * (-2.0 * attachment[0].log(10.0)).sqrt()
         }
-        z *= (-2.0 * attachment[0].log(10.0)).sqrt();
-        attachment[2] = 1.0 - attachment[2];
-        z
     }
 
     fn marsaglia(seed: &mut i64, attachment: &mut Vec<f64>) -> f64 {
-        // FIXME: value assigned to `x` is never read
-        #[allow(unused_assignments)]
-        let mut x = 0.0;
         if attachment.len() == 0 {
             attachment.push(0.0);
             attachment.push(0.0);
             attachment.push(0.0);
             attachment.push(0.0);
         }
-        if attachment[3] == 0.0 {
+        attachment[3] = 1.0 - attachment[3];
+        if attachment[3] != 0.0 {
             loop {
                 *seed = Rand::pmrand(*seed, 48271);
                 let u1 = *seed as f64 / RAND_MAX;
@@ -163,12 +156,10 @@ impl Rand {
                     break;
                 }
             }
-            x = attachment[0] * (-2.0 * attachment[2].log(10.0) / attachment[2]);
+            attachment[0] * (-2.0 * attachment[2].log(10.0) / attachment[2])
         } else {
-            x = attachment[1] * (-2.0 * attachment[2].log(10.0) / attachment[2]);
+            attachment[1] * (-2.0 * attachment[2].log(10.0) / attachment[2])
         }
-        attachment[3] = 1.0 - attachment[3];
-        x
     }
 
     fn lazy(seed: i64) -> i64 {
@@ -179,7 +170,7 @@ impl Rand {
         *seed = *seed * 1103515245 + 12345;
         (*seed >> 16) & (RAND_MAX as i64)
     }
-    
+
     fn ryus(seed: &mut i64) -> i64 {
         *seed = Rand::pmrand(*seed, 48271);
         let i = *seed as f64;
@@ -192,9 +183,9 @@ impl Rand {
 }
 
 /// A macro that generates random numbers
-/// 
+///
 /// #Example
-/// 
+///
 /// ```Rust
 /// #[macro_use]
 /// extern crate xiangyun;
