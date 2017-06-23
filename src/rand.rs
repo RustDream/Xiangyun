@@ -1,5 +1,7 @@
 use std::time::SystemTime;
 
+use super::_trait::RandBasic;
+
 const PI: f64 = 3.141592654;
 pub const RAND_MAX: f64 = 2147483647.0;
 
@@ -45,9 +47,14 @@ pub struct Rand {
     attachment: Vec<f64>,
 }
 
-impl Rand {
+impl RandBasic for Rand {
+    type Style = Style;
+    type Seed = i64;
+    type Attachment = u64;
+    type Return = f64;
+
     /// Is used to create a new random sequence core
-    pub fn new(style: Style) -> Self {
+    fn new(style: Style) -> Self {
         Rand {
             style: style,
             seed: 1,
@@ -56,12 +63,12 @@ impl Rand {
     }
 
     /// Is used to generate a fixed sequence
-    pub fn srand(&mut self, seed: i64) {
+    fn srand(&mut self, seed: i64) {
         self.seed = seed;
     }
 
     /// Is used to set random seed
-    pub fn lazy_srand(&mut self) {
+    fn lazy_srand(&mut self) {
         let sys_time = SystemTime::now();
         let foo_string = format!("{:?}", sys_time);
         let mut seed: i64 = 0;
@@ -92,7 +99,7 @@ impl Rand {
         }
     }
 
-    pub fn get_rand(&mut self, attachment: Option<u64>) -> f64 {
+    fn get_rand(&mut self, attachment: Option<u64>) -> f64 {
         let mut a = 25;
         match attachment {
             Some(e) => a = e,
@@ -118,16 +125,18 @@ impl Rand {
         }
     }
 
-    pub fn lazy_rand(&mut self, min: i64, max: i64) -> i64 {
+    fn lazy_rand(&mut self, min: i64, max: i64) -> i64 {
         let gap = max - min + 1;
         match self.style {
             Style::PMrand => min + (gap as f64 * self.get_rand(Some(48271))) as i64,
-            Style::Gauss | Style::Dalton => min + (gap as f64 * self.get_rand(Some((gap as u64)))) as i64,
+            Style::Gauss | Style::Dalton => {
+                min + (gap as f64 * self.get_rand(Some((gap as u64)))) as i64
+            }
             _ => min + (gap as f64 * self.get_rand(None)) as i64,
         }
     }
 
-    pub fn lazy_randf(&mut self, min: f64, max: f64) -> f64 {
+    fn lazy_randf(&mut self, min: f64, max: f64) -> f64 {
         let gap = max - min + 1.0;
         match self.style {
             Style::PMrand => min + self.get_rand(Some(48271)) * gap,
@@ -135,7 +144,9 @@ impl Rand {
             _ => min + self.get_rand(None) * gap,
         }
     }
+}
 
+impl Rand {
     #[inline]
     fn pmrand(seed: i64, a: i64) -> i64 {
         let m = RAND_MAX as i64;
@@ -146,6 +157,17 @@ impl Rand {
         let test = a * lo - r * hi;
         if test > 0 { test } else { test + m }
     }
+	
+	#[inline]
+	fn basic(seed: &mut i64) -> i64 {
+		*seed = Rand::pmrand(*seed, 48271);
+		*seed
+	}
+	
+	#[inline]
+	fn basicf(seed: &mut i64) -> f64 {
+		basic(seed: &mut i64) as f64
+	}
 
     fn gauss(seed: &mut i64, nsum: u64) -> f64 {
         let mut x = 0.0;
@@ -213,12 +235,9 @@ impl Rand {
     }
 
     fn ryus(seed: &mut i64) -> i64 {
-        *seed = Rand::pmrand(*seed, 48271);
-        let i = *seed as f64;
-        *seed = Rand::pmrand(*seed, 48271);
-        let j = *seed as f64;
-        *seed = Rand::pmrand(*seed, 48271);
-        let k = (*seed as f64 / RAND_MAX).abs();
+        let i = basic(seed) as f64;
+        let j = basic(seed) as f64;
+        let k = (basic(seed) as f64 / RAND_MAX).abs();
         (i * k + j * (1.0 - k)) as i64
     }
 

@@ -1,6 +1,6 @@
 extern crate xiangyun;
 
-use xiangyun::{Rand, Style};
+use xiangyun::{Rand, Style, RandBasic};
 
 fn main() {
     let mut foo = Rand::new(Style::Dalton);
