@@ -11,6 +11,6 @@ fn main() {
     println!("Dalton: {}", foo.lazy_randf(1.0, 100.0));
     println!("Dalton: {}", foo.lazy_randf(1.0, 100.0));
     println!("Dalton: {}", foo.lazy_randf(1.0, 100.0));
-    let foo = NRand::new("PMrand");
+    let mut foo = NRand::new("PMrand");
     println!("PMrand: {}", foo.lazy_randf(1.0, 100.0));
 }

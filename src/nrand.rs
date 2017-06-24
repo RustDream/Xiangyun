@@ -16,11 +16,11 @@ fn basic(seed: i64) {
 }
 
 impl RandBasic for NRand {
-    type Style = String;
+    type Style = &'static str;
     type Seed = i64;
     type Attachment = u32;
     type Return = i64;
-    fn new(style: String) -> Self {
+    fn new(style: &str) -> Self {
         if style.like("PMrand") {
             NRand::PMrand(1)
         } else if style.like("Ryus") {
@@ -38,26 +38,34 @@ impl RandBasic for NRand {
         }
     }
     fn lazy_srand(&mut self) {
-		let seed = time_get();
-	}
+        let seed = time_get();
+    }
     fn get_rand(&mut self, attachment: Option<u32>) -> i64 {
         match *self {
             NRand::PMrand(seed) => pmrand(seed, 48271),
-            NRand::Ryus(seed) => {}
+            NRand::Ryus(seed) => 0, // FIXME
             NRand::Lazy(seed) => pmrand(seed, 16807),
         }
     }
-    // fn lazy_rand(&mut self, min: i64, max: i64) -> i64;
-    // fn lazy_randf(&mut self, min: f64, max: f64) -> f64;
+    fn lazy_rand(&mut self, min: i64, max: i64) -> i64 {
+        // TODO
+        let gap = max - min + 1;
+        gap
+    }
+    fn lazy_randf(&mut self, min: f64, max: f64) -> f64 {
+        // TODO
+        let gap = max - min + 1.0;
+        gap
+    }
 }
 
 trait Like {
     fn like(&self, p: &str) -> bool;
 }
 
-impl Like for String {
+impl Like for str {
     fn like(&self, p: &str) -> bool {
-        if self.to_lowercase() == p.to_lowercase().to_string() {
+        if self.to_lowercase() == p.to_lowercase() {
             true
         } else {
             false
