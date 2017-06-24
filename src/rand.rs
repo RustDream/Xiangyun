@@ -81,26 +81,7 @@ impl RandBasic for Rand {
 
     /// Is used to set random seed
     fn lazy_srand(&mut self) {
-        let sys_time = SystemTime::now();
-        let foo_string = format!("{:?}", sys_time);
-        let mut seed: i64 = 0;
-        let mut flag = false;
-        for num in foo_string.chars() {
-            match num {
-                e @ '0'...'9' => {
-                    flag = true;
-                    seed = seed * 10 + (e as u8 - 48) as i64;
-                    if seed >= i32::max_value() as i64 {
-                        break;
-                    }
-                }
-                _ => {
-                    if flag {
-                        break;
-                    }
-                }
-            }
-        }
+        let mut seed: i64 = time_get();
         if seed > 0 {
             match self.style {
                 Style::Crand => self.seed = 1,
@@ -170,13 +151,13 @@ pub fn pmrand(seed: i64, a: i64) -> i64 {
 }
 
 #[inline]
-pub fn basic(seed: &mut i64) -> i64 {
+fn basic(seed: &mut i64) -> i64 {
     *seed = pmrand(*seed, 48271);
     *seed
 }
 
 #[inline]
-pub fn basicf(seed: &mut i64) -> f64 {
+fn basicf(seed: &mut i64) -> f64 {
     basic(seed) as f64
 }
 
@@ -310,4 +291,28 @@ macro_rules! rand {
         }
         bar
     }};
+}
+
+pub fn time_get() -> i64 {
+    let sys_time = SystemTime::now();
+    let foo_string = format!("{:?}", sys_time);
+    let mut seed: i64 = 0;
+    let mut flag = false;
+    for num in foo_string.chars() {
+        match num {
+            e @ '0'...'9' => {
+                flag = true;
+                seed = seed * 10 + (e as u8 - 48) as i64;
+                if seed >= i32::max_value() as i64 {
+                    break;
+                }
+            }
+            _ => {
+                if flag {
+                    break;
+                }
+            }
+        }
+    }
+    seed
 }
