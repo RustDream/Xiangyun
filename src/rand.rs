@@ -1,6 +1,18 @@
 use std::time::SystemTime;
 
-use super::_trait::RandBasic;
+pub trait RandBasic {
+    type Style;
+    type Seed;
+    type Attachment;
+    type Return;
+    fn new(style: Self::Style) -> Self;
+    fn srand(&mut self, seed: Self::Seed);
+    fn lazy_srand(&mut self);
+    fn get_rand(&mut self, attachment: Option<Self::Attachment>) -> Self::Return;
+    fn lazy_rand(&mut self, min: i64, max: i64) -> i64;
+    fn lazy_randf(&mut self, min: f64, max: f64) -> f64;
+}
+
 
 const PI: f64 = 3.141592654;
 pub const RAND_MAX: f64 = 2147483647.0;
@@ -157,23 +169,22 @@ impl Rand {
         let test = a * lo - r * hi;
         if test > 0 { test } else { test + m }
     }
-	
-	#[inline]
-	fn basic(seed: &mut i64) -> i64 {
-		*seed = Rand::pmrand(*seed, 48271);
-		*seed
-	}
-	
-	#[inline]
-	fn basicf(seed: &mut i64) -> f64 {
-		basic(seed: &mut i64) as f64
-	}
+
+    #[inline]
+    fn basic(seed: &mut i64) -> i64 {
+        *seed = Rand::pmrand(*seed, 48271);
+        *seed
+    }
+
+    #[inline]
+    fn basicf(seed: &mut i64) -> f64 {
+        Rand::basic(seed) as f64
+    }
 
     fn gauss(seed: &mut i64, nsum: u64) -> f64 {
         let mut x = 0.0;
         for _ in 0..nsum {
-            *seed = Rand::pmrand(*seed, 48271);
-            x += *seed as f64 / RAND_MAX;
+            x += Rand::basicf(seed) / RAND_MAX;
         }
         x -= nsum as f64 / 2.0;
         x /= (nsum as f64 / 12.0).sqrt();
@@ -188,10 +199,8 @@ impl Rand {
         }
         attachment[2] = 1.0 - attachment[2];
         if attachment[2] != 0.0 {
-            *seed = Rand::pmrand(*seed, 48271);
-            attachment[0] = (*seed as f64 + 1.0) / (RAND_MAX + 2.0);
-            *seed = Rand::pmrand(*seed, 48271);
-            attachment[1] = *seed as f64 / (RAND_MAX + 1.0);
+            attachment[0] = (Rand::basicf(seed) + 1.0) / (RAND_MAX + 2.0);
+            attachment[1] = Rand::basicf(seed) / (RAND_MAX + 1.0);
             (2.0 * PI * attachment[1]).sin() * (-2.0 * attachment[0].log(10.0)).sqrt()
         } else {
             (2.0 * PI * attachment[1]).cos() * (-2.0 * attachment[0].log(10.0)).sqrt()
@@ -208,10 +217,8 @@ impl Rand {
         attachment[3] = 1.0 - attachment[3];
         if attachment[3] != 0.0 {
             loop {
-                *seed = Rand::pmrand(*seed, 48271);
-                let u1 = *seed as f64 / RAND_MAX;
-                *seed = Rand::pmrand(*seed, 48271);
-                let u2 = *seed as f64 / RAND_MAX;
+                let u1 = Rand::basicf(seed) / RAND_MAX;
+                let u2 = Rand::basicf(seed) / RAND_MAX;
                 attachment[0] = 2.0 * u1 - 1.0;
                 attachment[1] = 2.0 * u2 - 1.0;
                 attachment[2] = attachment[0] * attachment[0] + attachment[1] * attachment[1];
@@ -235,9 +242,9 @@ impl Rand {
     }
 
     fn ryus(seed: &mut i64) -> i64 {
-        let i = basic(seed) as f64;
-        let j = basic(seed) as f64;
-        let k = (basic(seed) as f64 / RAND_MAX).abs();
+        let i = Rand::basicf(seed);
+        let j = Rand::basicf(seed);
+        let k = (Rand::basicf(seed) / RAND_MAX).abs();
         (i * k + j * (1.0 - k)) as i64
     }
 
