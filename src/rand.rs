@@ -1,18 +1,4 @@
-use std::time::SystemTime;
-
-pub trait RandBasic {
-    type Style;
-    type Seed;
-    type Attachment;
-    type Return;
-    fn new(style: Self::Style) -> Self;
-    fn srand(&mut self, seed: Self::Seed);
-    fn lazy_srand(&mut self);
-    fn get_rand(&mut self, attachment: Option<Self::Attachment>) -> Self::Return;
-    fn lazy_rand(&mut self, min: i64, max: i64) -> i64;
-    fn lazy_randf(&mut self, min: f64, max: f64) -> f64;
-}
-
+use super::basic::{Basic, pmrand, time_get, rand};
 
 const PI: f64 = 3.141592654;
 pub const RAND_MAX: f64 = 2147483647.0;
@@ -59,7 +45,7 @@ pub struct Rand {
     attachment: Vec<f64>,
 }
 
-impl RandBasic for Rand {
+impl Basic for Rand {
     type Style = Style;
     type Seed = i64;
     type Attachment = u64;
@@ -81,7 +67,7 @@ impl RandBasic for Rand {
 
     /// Is used to set random seed
     fn lazy_srand(&mut self) {
-        let mut seed: i64 = time_get();
+        let seed: i64 = time_get();
         if seed > 0 {
             match self.style {
                 Style::Crand => self.seed = 1,
@@ -108,7 +94,7 @@ impl RandBasic for Rand {
             Style::Marsaglia => {
                 (Rand::marsaglia(&mut self.seed, &mut self.attachment) / RAND_MAX).abs()
             }
-            Style::Crand => (Rand::crand(&mut self.seed) as f64 / RAND_MAX).abs(),
+            Style::Crand => rand(&mut self.seed) as f64 / RAND_MAX.abs(),
             Style::Ryus => (Rand::ryus(&mut self.seed) as f64 / RAND_MAX).abs(),
             Style::Dalton => (Rand::dalton(&mut self.seed, a) / RAND_MAX).abs(),
             _ => {
@@ -139,16 +125,7 @@ impl RandBasic for Rand {
     }
 }
 
-#[inline]
-pub fn pmrand(seed: i64, a: i64) -> i64 {
-    let m = RAND_MAX as i64;
-    let q = m / a;
-    let r = m % a;
-    let hi = seed / q;
-    let lo = seed % q;
-    let test = a * lo - r * hi;
-    if test > 0 { test } else { test + m }
-}
+
 
 #[inline]
 fn basic(seed: &mut i64) -> i64 {
@@ -215,11 +192,6 @@ impl Rand {
 
     fn lazy(seed: i64) -> i64 {
         pmrand(seed, 16807)
-    }
-
-    fn crand(seed: &mut i64) -> i64 {
-        *seed = *seed * 1103515245 + 12345;
-        (*seed >> 16) & (RAND_MAX as i64)
     }
 
     fn ryus(seed: &mut i64) -> i64 {
@@ -291,28 +263,4 @@ macro_rules! rand {
         }
         bar
     }};
-}
-
-pub fn time_get() -> i64 {
-    let sys_time = SystemTime::now();
-    let foo_string = format!("{:?}", sys_time);
-    let mut seed: i64 = 0;
-    let mut flag = false;
-    for num in foo_string.chars() {
-        match num {
-            e @ '0'...'9' => {
-                flag = true;
-                seed = seed * 10 + (e as u8 - 48) as i64;
-                if seed >= i32::max_value() as i64 {
-                    break;
-                }
-            }
-            _ => {
-                if flag {
-                    break;
-                }
-            }
-        }
-    }
-    seed
 }

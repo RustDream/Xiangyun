@@ -1,6 +1,6 @@
 [package]
 name = "xiangyun"
-version = "0.1.1-alpha"
+version = "0.1.1"
 license = "MIT"
 authors = ["3442853561<3442853561@qq.com>"]
 keywords = ["random", "rand"]

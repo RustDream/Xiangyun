@@ -1,8 +1,8 @@
 use std::cell::Cell;
 
-use super::rand::{RandBasic, pmrand, time_get};
+use super::basic::{Basic, pmrand, time_get};
 
-//pub const NRAND_MAX: u32 = 2147483647;
+pub const NRAND_MAX: u32 = 2147483647;
 
 pub enum NRand {
     PMrand(i64),
@@ -10,12 +10,25 @@ pub enum NRand {
     Lazy(i64),
 }
 
-fn basic(seed: i64) {
-    let s = Cell::new(seed);
-    s.set(pmrand(s.get(), 48271));
+fn basic(seed: &Cell<i64>) -> i64 {
+	println!("{}", seed.get());
+    while seed.get() > i32::max_value() as i64 {
+        seed.set(seed.get() - i32::max_value() as i64);
+    }
+    let foo = seed.get() * 1103515245 + 12345;
+    while seed.get() > i32::max_value() as i64 {
+        seed.set(seed.get() - i32::max_value() as i64);
+    }
+    seed.set(foo);
+	println!("{}", seed.get());
+    (foo >> 16) & 2147483647
 }
 
-impl RandBasic for NRand {
+fn basicf(seed: &Cell<i64>) -> f64 {
+    basic(seed) as f64
+}
+
+impl Basic for NRand {
     type Style = &'static str;
     type Seed = i64;
     type Attachment = u32;
@@ -39,23 +52,40 @@ impl RandBasic for NRand {
     }
     fn lazy_srand(&mut self) {
         let seed = time_get();
+        self.srand(seed);
     }
     fn get_rand(&mut self, attachment: Option<u32>) -> i64 {
         match *self {
-            NRand::PMrand(seed) => pmrand(seed, 48271),
-            NRand::Ryus(seed) => 0, // FIXME
-            NRand::Lazy(seed) => pmrand(seed, 16807),
+            NRand::PMrand(seed) => {
+                let foo = pmrand(seed, 48271);
+                NRand::PMrand(foo);
+                foo
+            }
+            NRand::Ryus(seed) => NRand::ryus(seed), // FIXME
+            NRand::Lazy(seed) => {
+                let foo = pmrand(seed, 16807);
+                NRand::PMrand(foo);
+                foo
+            }
         }
     }
     fn lazy_rand(&mut self, min: i64, max: i64) -> i64 {
-        // TODO
         let gap = max - min + 1;
-        gap
+        self.get_rand(None) / NRAND_MAX as i64 * gap + min
     }
     fn lazy_randf(&mut self, min: f64, max: f64) -> f64 {
-        // TODO
         let gap = max - min + 1.0;
-        gap
+        self.get_rand(None) as f64 / NRAND_MAX as f64 * gap + min
+    }
+}
+
+impl NRand {
+    fn ryus(seed: i64) -> i64 {
+        let s = Cell::new(seed);
+        let i = basicf(&s);
+        let j = basicf(&s);
+        let k = basicf(&s) / NRAND_MAX as f64;
+        (i * k + j * (1.0 - k)) as i64
     }
 }
 
