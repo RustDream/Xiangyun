@@ -7,19 +7,19 @@ pub enum Rand {
     Basic(u32),
     PMrand(u32, u32),
     Gauss(u32, u32),
-	BMgauss(u32, f64, f64, bool),
+    BMgauss(u32, f64, f64, bool),
 }
 
 impl Rand {
-	pub fn new() -> Self {
-		Rand::Basic(time_get() as u32)
-	}
+    pub fn new() -> Self {
+        Rand::Basic(time_get() as u32)
+    }
     pub fn srand(&mut self, seed: u32) {
         match *self {
             Rand::Basic(_) => *self = Rand::Basic(seed),
             Rand::PMrand(_, a) => *self = Rand::PMrand(seed, a),
             Rand::Gauss(_, nsum) => *self = Rand::Gauss(seed, nsum),
-			Rand::BMgauss(_, u, v, phase) => *self = Rand::BMgauss(seed, u, v, phase),
+            Rand::BMgauss(_, u, v, phase) => *self = Rand::BMgauss(seed, u, v, phase),
         }
     }
     pub fn rand(&mut self) -> f64 {
@@ -40,6 +40,15 @@ impl Rand {
                 let mut foo = seed;
                 let bar = gauss(&mut foo, nsum);
                 self.srand(foo);
+                bar
+            }
+            Rand::BMgauss(seed, u, v, phase) => {
+                let mut foo_seed = seed;
+                let mut foo_u = u;
+                let mut foo_v = v;
+                let mut foo_phase = phase;
+                let bar = bmgauss(foo_seed, foo_u, foo_v, foo_phase);
+                *self = Rand::BMgauss(foo_seed, foo_u, foo_v, foo_phase);
                 bar
             }
         }
@@ -101,11 +110,12 @@ fn gauss(seed: &mut u32, nsum: u32) -> f64 {
 }
 
 fn bmgauss(seed: &mut u32, u: &mut f64, v: &mut f64, phase: &mut bool) -> f64 {
-	let mut z = 0.0;
-	if phase {
-		phase = false
-	} else {
-		phase = true
-		(-2.0*(*u)).sqrt()*(2.0*PI*v)
-	}
+    let mut z = 0.0;
+    if phase {
+        phase = false * u = (basic(seed) + 1) as f64 / (RAND_MAX + 2) as f64;
+        *v = basic(seed) as f64 / (RAND_MAX + 1) as f64;
+        (-2.0 * (*u).log()).sqrt() * (2.0 * PI * v).sin()
+    } else {
+        phase = true(-2.0 * (*u).log()).sqrt() * (2.0 * PI * v).cos()
+    }
 }
