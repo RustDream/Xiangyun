@@ -8,6 +8,7 @@ pub enum Rand {
     PMrand(u32, u32),
     Gauss(u32, u32),
     BMgauss(u32, f64, f64, bool),
+    Marsaglia(u32, f64, f64, f64, bool),
 }
 
 impl Rand {
@@ -20,6 +21,7 @@ impl Rand {
             Rand::PMrand(_, a) => *self = Rand::PMrand(seed, a),
             Rand::Gauss(_, nsum) => *self = Rand::Gauss(seed, nsum),
             Rand::BMgauss(_, u, v, phase) => *self = Rand::BMgauss(seed, u, v, phase),
+            Rand::Marsaglia(_, v1, v2, s, phase) => *self = Rand::Marsaglia(seed, v1, v2, s, phase),
         }
     }
     pub fn rand(&mut self) -> f64 {
@@ -47,8 +49,22 @@ impl Rand {
                 let mut foo_u = u;
                 let mut foo_v = v;
                 let mut foo_phase = phase;
-                let bar = bmgauss(foo_seed, foo_u, foo_v, foo_phase);
+                let bar = bmgauss(&mut foo_seed, &mut foo_u, &mut foo_v, &mut foo_phase);
                 *self = Rand::BMgauss(foo_seed, foo_u, foo_v, foo_phase);
+                bar
+            }
+            Rand::Marsaglia(seed, v1, v2, s, phase) => {
+                let mut foo_seed = seed;
+                let mut foo_v1 = v1;
+                let mut foo_v2 = v2;
+                let mut foo_s = s;
+                let mut foo_phase = phase;
+                let bar = marsaglia(&mut foo_seed,
+                                    &mut foo_v1,
+                                    &mut foo_v2,
+                                    &mut foo_s,
+                                    &mut foo_phase);
+                *self = Rand::Marsaglia(foo_seed, foo_v1, foo_v2, foo_s, foo_phase);
                 bar
             }
         }
@@ -110,12 +126,27 @@ fn gauss(seed: &mut u32, nsum: u32) -> f64 {
 }
 
 fn bmgauss(seed: &mut u32, u: &mut f64, v: &mut f64, phase: &mut bool) -> f64 {
-    let mut z = 0.0;
-    if phase {
-        phase = false * u = (basic(seed) + 1) as f64 / (RAND_MAX + 2) as f64;
+    if *phase {
+        *phase = false;
+        *u = (basic(seed) + 1) as f64 / (RAND_MAX + 2) as f64;
         *v = basic(seed) as f64 / (RAND_MAX + 1) as f64;
-        (-2.0 * (*u).log()).sqrt() * (2.0 * PI * v).sin()
+        (-2.0 * (*u).log10()).sqrt() * (2.0 * PI * (*v)).sin()
     } else {
-        phase = true(-2.0 * (*u).log()).sqrt() * (2.0 * PI * v).cos()
+        *phase = true;
+        (-2.0 * (*u).log10()).sqrt() * (2.0 * PI * (*v)).cos()
+    }
+}
+
+fn marsaglia(seed: &mut u32, v1: &mut f64, v2: &mut f64, s: &mut f64, phase: &mut bool) -> f64 {
+    if *phase {
+        *phase = false;
+        let u1 = basic(seed) as f64 / RAND_MAX as f64;
+        let u2 = basic(seed) as f64 / RAND_MAX as f64;
+        *v1 = 2.0 * u1 - 1.0;
+        *v2 = 2.0 * u2 - 1.0;
+        *v1 * (-2.0 * (*s).log10() / (*s)).sqrt()
+    } else {
+        *phase = true;
+        *v2 * (-2.0 * (*s).log10() / (*s)).sqrt()
     }
 }
