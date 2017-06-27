@@ -7,7 +7,7 @@ pub enum Rand {
     Basic(u32),
     PMrand(u32, u32),
     Gauss(u32, u32),
-	// BMgauss(u32, f64, f64, u32),
+	BMgauss(u32, f64, f64, bool),
 }
 
 impl Rand {
@@ -19,6 +19,7 @@ impl Rand {
             Rand::Basic(_) => *self = Rand::Basic(seed),
             Rand::PMrand(_, a) => *self = Rand::PMrand(seed, a),
             Rand::Gauss(_, nsum) => *self = Rand::Gauss(seed, nsum),
+			Rand::BMgauss(_, u, v, phase) => *self = Rand::BMgauss(seed, u, v, phase),
         }
     }
     pub fn rand(&mut self) -> f64 {
@@ -99,4 +100,12 @@ fn gauss(seed: &mut u32, nsum: u32) -> f64 {
     x
 }
 
-// fn bmgauss(seed: &mut u32)
+fn bmgauss(seed: &mut u32, u: &mut f64, v: &mut f64, phase: &mut bool) -> f64 {
+	let mut z = 0.0;
+	if phase {
+		phase = false
+	} else {
+		phase = true
+		(-2.0*(*u)).sqrt()*(2.0*PI*v)
+	}
+}
