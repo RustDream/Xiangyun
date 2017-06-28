@@ -96,11 +96,25 @@ fn time_get() -> i64 {
 }
 
 fn basic(seed: &mut u32) -> u32 {
+    // seed = seed * 1103515245 + 12345
+    // basic = seed >> 16 & RAND_MAX
     *seed = (((*seed as u64 * 1103515245) as u32) as u64 + 12345) as u32;
     *seed >> 16 & RAND_MAX
 }
 
 fn pmrand(seed: &mut u32, a: u32) -> u32 {
+    // m = 2147483647
+    // q = m / a
+    // r = m mod as
+    // hi = seed / q
+    // lo = seed mod q
+    // test = a * lo - r * hi
+    // if test > 0 then
+    //     seed = test
+    // else
+    //     seed = test + m
+    // end if
+    // pmrand = seed
     let m: u64 = 2147483647;
     let q = m / a as u64;
     let r = m % a as u64;
@@ -116,6 +130,13 @@ fn pmrand(seed: &mut u32, a: u32) -> u32 {
 }
 
 fn gauss(seed: &mut u32, nsum: u32) -> f64 {
+    // x = 0
+    // for i = 1 to nsum
+    //     x = x + basic(seed) / RAND_MAX
+    // next i
+    // x = x - nsum / 2
+    // x = x / ((nsum / 12) ^ 0.5)
+    // gauss = x
     let mut x = 0.0;
     for _ in 0..nsum {
         x += basic(seed) as f64 / RAND_MAX as f64;
@@ -126,6 +147,16 @@ fn gauss(seed: &mut u32, nsum: u32) -> f64 {
 }
 
 fn bmgauss(seed: &mut u32, u: &mut f64, v: &mut f64, phase: &mut bool) -> f64 {
+    // if phase then
+    //     phase = false
+    //     u = (basic(seed) + 1) / (RAND_MAX + 2)
+    //     v = basic(seed) / (RAND_MAX + 1)
+    //     bmgauss = sin(2 * PI * v)
+    // else
+    //     phase = true
+    //     bmgauss = cos(2 * PI * v)
+    // end if
+    // bmgauss = bmgauss * (-2 * (log(u) ^ 0.5))
     if *phase {
         *phase = false;
         *u = (basic(seed) + 1) as f64 / (RAND_MAX + 2) as f64;
@@ -138,6 +169,18 @@ fn bmgauss(seed: &mut u32, u: &mut f64, v: &mut f64, phase: &mut bool) -> f64 {
 }
 
 fn marsaglia(seed: &mut u32, v1: &mut f64, v2: &mut f64, s: &mut f64, phase: &mut bool) -> f64 {
+    // if phase then
+    //     phase = false
+    //     u1 = basic(seed) / RAND_MAX
+    //     u2 = basic(seed) / RAND_MAX
+    //     v1 = 2 * u1 - 1
+    //     v2 = 2 * u2 - 1
+    //     marsaglia = v1
+    // else
+    //     phase = true
+    //     marsaglia = v2
+    // end if
+    // marsaglia = marsaglia * ((-2 * log(s) / s) ^ 0.5)
     if *phase {
         *phase = false;
         let u1 = basic(seed) as f64 / RAND_MAX as f64;
