@@ -2,7 +2,7 @@ use std::time::SystemTime;
 
 const PI: f64 = 3.141592654;
 
-/// RAND_MAX is a const   
+/// RAND_MAX is a const
 /// Please don't assume that it is any value
 pub const RAND_MAX: u32 = 32767;
 
@@ -29,6 +29,10 @@ impl Rand {
             Rand::BMgauss(_, u, v, phase) => *self = Rand::BMgauss(seed, u, v, phase),
             Rand::Marsaglia(_, v1, v2, s, phase) => *self = Rand::Marsaglia(seed, v1, v2, s, phase),
         }
+    }
+
+    pub fn lazy_srand(&mut self) {
+        self.srand(time_get() as u32);
     }
 
     /// get a random number
