@@ -1,3 +1,4 @@
+use super::base::BaseRand;
 use std::f64::consts::PI;
 
 /// RAND_MAX is a const
@@ -23,9 +24,7 @@ impl Rand {
     /// a lazy way to get a random solver
     pub fn new() -> Self {
         Rand {
-            seed: vec![time_get() as usize],
-            style: Style::Basic,
-            rand: ,
+            base: 
         }
     }
 
