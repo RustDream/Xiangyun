@@ -1,35 +1,35 @@
 pub enum Flag {
-    on(usize),
-    off,
+    On(usize),
+    Off,
 }
 
 impl Flag {
     pub fn new() -> Self {
-        Flag::off
+        Flag::Off
     }
 
     pub fn on(&mut self) {
-        *self = Flag::on(0);
+        *self = Flag::On(0);
     }
 
     pub fn off(&mut self) {
-        *self = Flag::off;
+        *self = Flag::Off;
     }
 
     pub fn up(&mut self) {
         match *self {
-            Flag::on(e) => *self = Flag::on(e + 1),
-            _ => *self = Flag::on(0),
+            Flag::On(e) => *self = Flag::On(e + 1),
+            _ => *self = Flag::On(0),
         }
     }
 
     pub fn down(&mut self) {
         match *self {
-            Flag::on(e) => {
+            Flag::On(e) => {
                 if e == 0 {
-                    *self = Flag::off
+                    *self = Flag::Off
                 } else {
-                    *self = Flag::on(e - 1)
+                    *self = Flag::On(e - 1)
                 }
             }
             _ => {}
@@ -38,7 +38,7 @@ impl Flag {
 
     pub fn is_on(&self) -> bool {
         match *self {
-            Flag::on(_) => true,
+            Flag::On(_) => true,
             _ => false,
         }
     }

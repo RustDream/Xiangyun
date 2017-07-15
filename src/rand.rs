@@ -1,15 +1,12 @@
 use super::base::{BaseRand, RAND_MAX};
 use std::f64::consts::PI;
 
-
-
 pub enum Style {
     Normal,
     Gauss(u32),
     BMgauss(f64, f64, bool),
     Marsaglia(f64, f64, f64, bool),
 }
-
 
 pub struct Rand {
     base: BaseRand,
@@ -29,10 +26,41 @@ impl Rand {
         self.style = style;
     }
 
+    pub fn srand(&mut self, seed: usize) {
+        self.base.srand(seed);
+    }
+
+    pub fn lazy_srand(&mut self) {
+        self.base.lazy_srand();
+    }
+
+    pub fn set_function(&mut self, style: &str) {
+        self.base.set_function(style);
+    }
+
     /// get a random number
-    pub fn rand(&mut self) -> usize {
-        //self.rand(&mut self.seed)
-        0
+    pub fn rand(&mut self) -> f64 {
+        let mut _return = 0.0;
+        match self.style {
+            Style::Normal => _return = self.base.rand() as f64,
+            Style::Gauss(nsum) => _return = gauss(&mut self.base, nsum),
+            Style::BMgauss(u, v, phase) => {
+                let mut _u = u;
+                let mut _v = v;
+                let mut _phase = phase;
+                _return = bmgauss(&mut self.base, &mut _u, &mut _v, &mut _phase);
+                self.style = Style::BMgauss(_u, _v, _phase);
+            }
+            Style::Marsaglia(v1, v2, s, phase) => {
+                let mut _v1 = v1;
+                let mut _v2 = v2;
+                let mut _s = s;
+                let mut _phase = phase;
+                _return = marsaglia(&mut self.base, &mut _v1, &mut _v2, &mut _s, &mut _phase);
+                self.style = Style::Marsaglia(_v1, _v2, _s, _phase);
+            }
+        }
+        _return
     }
 }
 
@@ -58,7 +86,12 @@ fn bmgauss(base: &mut BaseRand, u: &mut f64, v: &mut f64, phase: &mut bool) -> f
     }
 }
 
-fn marsaglia(base: &mut BaseRand, v1: &mut f64, v2: &mut f64, s: &mut f64, phase: &mut bool) -> f64 {
+fn marsaglia(base: &mut BaseRand,
+             v1: &mut f64,
+             v2: &mut f64,
+             s: &mut f64,
+             phase: &mut bool)
+             -> f64 {
     if *phase {
         *phase = false;
         let u1 = base.rand() as f64 / RAND_MAX as f64;
