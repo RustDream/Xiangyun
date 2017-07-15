@@ -1,12 +1,16 @@
 use std::time::SystemTime;
 use super::flag::Flag;
 
-struct BaseRand {
+/// RAND_MAX is a const
+/// Please don't assume that it is any value
+pub const RAND_MAX: u32 = 32767;
+
+pub struct BaseRand {
     seed: usize,
     function: fn(&mut usize) -> usize,
 }
 
-impl BaseRand{
+impl BaseRand {
     pub fn new() -> Self {
         BaseRand {
             seed: time_get() as usize,
@@ -18,11 +22,11 @@ impl BaseRand{
         *self.seed = seed;
     }
 
-    pub fn sfunction(&mut self, style: &str){
+    pub fn set_function(&mut self, style: &str) {
         match style {
-            "pmrand" => *self.function = pmrand,
-            "basic" => *self.function = basic,
-            _ => *self.function = lazy,
+            "pmrand" => self.function = pmrand,
+            "basic" => self.function = basic,
+            _ => self.function = lazy,
         }
     }
 
@@ -42,11 +46,11 @@ fn basic(seed: &mut usize) -> usize {
     _seed >> 16 & RAND_MAX
 }
 
-fn lazy(seed: &mut usize) -> usize{
+fn lazy(seed: &mut usize) -> usize {
     _pmrand(seed, 16807)
 }
 
-fn pmrand(seed: &mut usize) -> usize{
+fn pmrand(seed: &mut usize) -> usize {
     _pmrand(seed, 48271)
 }
 
@@ -75,7 +79,7 @@ fn time_get() -> isize {
             e @ '0'...'9' => {
                 flag.on();
                 seed = seed * 10 + (e as u8 - 48) as isize;
-                if seed >= (isize::max_value()/10 - 10) as isize {
+                if seed >= (isize::max_value() / 10 - 10) as isize {
                     break;
                 }
             }
