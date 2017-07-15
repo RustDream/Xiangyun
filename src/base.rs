@@ -3,7 +3,7 @@ use super::flag::Flag;
 
 /// RAND_MAX is a const
 /// Please don't assume that it is any value
-pub const RAND_MAX: u32 = 32767;
+pub const RAND_MAX: usize = 32767;
 
 pub struct BaseRand {
     seed: usize,
@@ -19,7 +19,7 @@ impl BaseRand {
     }
 
     pub fn srand(&mut self, seed: usize) {
-        *self.seed = seed;
+        self.seed = seed;
     }
 
     pub fn set_function(&mut self, style: &str) {
@@ -35,14 +35,15 @@ impl BaseRand {
     }
 
     pub fn rand(&mut self) -> usize {
-        *self.function(*self.seed)
+        //*self.function(*self.seed)
+        0
     }
 }
 
 fn basic(seed: &mut usize) -> usize {
-    let mut _seed = seed.pop();
-    _seed = (((_seed as u64 * 1103515245) as u32) as u64 + 12345) as u32;
-    seed.push(_seed);
+    let mut _seed = *seed;
+    _seed = (((_seed as u64 * 1103515245) as u32) as u64 + 12345) as usize;
+    *seed = _seed;
     _seed >> 16 & RAND_MAX
 }
 
@@ -62,9 +63,9 @@ fn _pmrand(seed: &mut usize, a: u64) -> usize {
     let lo = *seed as u64 % q;
     let test = a as u64 * lo - r * hi;
     if test > 0 {
-        *seed = test as u32;
+        *seed = test as usize;
     } else {
-        *seed = (test + m) as u32;
+        *seed = (test + m) as usize;
     }
     *seed
 }

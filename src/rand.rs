@@ -26,7 +26,7 @@ impl Rand {
     }
 
     pub fn set_style(&mut self, style: Style) {
-        *self.style = style;
+        self.style = style;
     }
 
     /// get a random number
