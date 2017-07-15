@@ -40,27 +40,27 @@ impl Rand {
 
     /// get a random number
     pub fn rand(&mut self) -> f64 {
-        let mut _return = 0.0;
         match self.style {
-            Style::Normal => _return = self.base.rand() as f64,
-            Style::Gauss(nsum) => _return = gauss(&mut self.base, nsum),
+            Style::Normal => self.base.rand() as f64,
+            Style::Gauss(nsum) => gauss(&mut self.base, nsum),
             Style::BMgauss(u, v, phase) => {
                 let mut _u = u;
                 let mut _v = v;
                 let mut _phase = phase;
-                _return = bmgauss(&mut self.base, &mut _u, &mut _v, &mut _phase);
+                let _return = bmgauss(&mut self.base, &mut _u, &mut _v, &mut _phase);
                 self.style = Style::BMgauss(_u, _v, _phase);
+                _return
             }
             Style::Marsaglia(v1, v2, s, phase) => {
                 let mut _v1 = v1;
                 let mut _v2 = v2;
                 let mut _s = s;
                 let mut _phase = phase;
-                _return = marsaglia(&mut self.base, &mut _v1, &mut _v2, &mut _s, &mut _phase);
+                let _return = marsaglia(&mut self.base, &mut _v1, &mut _v2, &mut _s, &mut _phase);
                 self.style = Style::Marsaglia(_v1, _v2, _s, _phase);
+                _return
             }
         }
-        _return
     }
 }
 
