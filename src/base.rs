@@ -14,7 +14,7 @@ impl BaseRand {
     pub fn new() -> Self {
         BaseRand {
             seed: time_get() as usize,
-            rand: basic,
+            function: basic,
         }
     }
 
@@ -35,8 +35,8 @@ impl BaseRand {
     }
 
     pub fn rand(&mut self) -> usize {
-        //*self.function(*self.seed)
-        0
+        let func = self.function;
+        func(&mut self.seed)
     }
 }
 
