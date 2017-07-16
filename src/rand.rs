@@ -101,6 +101,10 @@ impl Rand {
         self.base.pop()
     }
 
+    pub fn jump_style(&mut self, style: JumpStyle) {
+        self.jump = style;
+    }
+
     pub fn jump(&mut self) {
         match self.handle {
             Some(e) => {
