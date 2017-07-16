@@ -3,15 +3,24 @@ use std::f64::consts::PI;
 
 pub enum Style {
     Normal,
+    Pythagoras,
     Gauss(u32),
     BMgauss(f64, f64, bool),
     Marsaglia(f64, f64, f64, bool),
+}
+
+pub enum JumpStyle {
+    Static,
+    Next,
+    Jump,
+    DoubleJump,
 }
 
 pub struct Rand {
     base: Vec<BaseRand>,
     handle: Option<usize>,
     style: Style,
+    jump: JumpStyle,
 }
 
 impl Rand {
@@ -21,6 +30,7 @@ impl Rand {
             base: vec![BaseRand::new()],
             handle: Some(0),
             style: Style::Normal,
+            jump: JumpStyle::Static,
         }
     }
 
@@ -48,6 +58,7 @@ impl Rand {
     pub fn rand(&mut self) -> f64 {
         match self.style {
             Style::Normal => self.base() as f64,
+            Style::Pythagoras => pythagoras(self),
             Style::Gauss(nsum) => gauss(self, nsum),
             Style::BMgauss(u, v, phase) => {
                 let mut _u = u;
@@ -75,10 +86,41 @@ impl Rand {
             _ => {
                 let mut _base = 0;
                 for i in 0..self.base.len() {
-                    _base += self.base[i].rand()/self.base.len();
+                    _base += self.base[i].rand() / self.base.len();
                 }
                 _base
             }
+        }
+    }
+
+    pub fn new_base(&mut self) {
+        self.base.push(BaseRand::new());
+    }
+
+    pub fn del_base(&mut self) -> Option<BaseRand> {
+        self.base.pop()
+    }
+
+    pub fn jump(&mut self) {
+        match self.handle {
+            Some(e) => {
+                match self.jump {
+                    JumpStyle::Next => self.handle = Some((e + 1) % self.base.len()),
+                    JumpStyle::Jump => {
+                        let _jump = self.base();
+                        self.handle = Some(_jump % self.base.len());
+                    }
+                    JumpStyle::DoubleJump => {
+                        let _gap = self.base();
+                        for _ in 0.._gap {
+                            let _jump = self.base();
+                            self.handle = Some(_jump % self.base.len());
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            _ => {}
         }
     }
 }
@@ -105,12 +147,7 @@ fn bmgauss(base: &mut Rand, u: &mut f64, v: &mut f64, phase: &mut bool) -> f64 {
     }
 }
 
-fn marsaglia(base: &mut Rand,
-             v1: &mut f64,
-             v2: &mut f64,
-             s: &mut f64,
-             phase: &mut bool)
-             -> f64 {
+fn marsaglia(base: &mut Rand, v1: &mut f64, v2: &mut f64, s: &mut f64, phase: &mut bool) -> f64 {
     if *phase {
         *phase = false;
         let u1 = base.base() as f64 / RAND_MAX as f64;
@@ -122,4 +159,11 @@ fn marsaglia(base: &mut Rand,
         *phase = true;
         *v2 * (-2.0 * (*s).log10() / (*s)).sqrt()
     }
+}
+
+fn pythagoras(base: &mut Rand) -> f64 {
+    let a = base.base() as f64 / (RAND_MAX + 1) as f64;
+    let b = base.base() as f64 / (RAND_MAX + 1) as f64;
+    let c_sqr = a * a + b * b;
+    c_sqr.sqrt()
 }
