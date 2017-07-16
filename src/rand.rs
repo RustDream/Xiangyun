@@ -129,10 +129,14 @@ impl Rand {
     }
 }
 
+fn base64(base: &mut Rand, base_offset: usize, max_offset: usize) -> f64 {
+    (base.base() + base_offset) as f64 / (RAND_MAX + base_offset + max_offset) as f64
+}
+
 fn gauss(base: &mut Rand, nsum: u32) -> f64 {
     let mut x = 0.0;
     for _ in 0..nsum {
-        x += base.base() as f64 / RAND_MAX as f64;
+        x += base64(base, 0, 0);
     }
     x -= nsum as f64 / 2.0;
     x /= (nsum as f64 / 12.0).sqrt();
@@ -142,8 +146,8 @@ fn gauss(base: &mut Rand, nsum: u32) -> f64 {
 fn bmgauss(base: &mut Rand, u: &mut f64, v: &mut f64, phase: &mut bool) -> f64 {
     if *phase {
         *phase = false;
-        *u = (base.base() + 1) as f64 / (RAND_MAX + 2) as f64;
-        *v = base.base() as f64 / (RAND_MAX + 1) as f64;
+        *u = base64(base, 1, 1);
+        *v = base64(base, 0, 1);
         (-2.0 * (*u).log10()).sqrt() * (2.0 * PI * (*v)).sin()
     } else {
         *phase = true;
@@ -154,8 +158,8 @@ fn bmgauss(base: &mut Rand, u: &mut f64, v: &mut f64, phase: &mut bool) -> f64 {
 fn marsaglia(base: &mut Rand, v1: &mut f64, v2: &mut f64, s: &mut f64, phase: &mut bool) -> f64 {
     if *phase {
         *phase = false;
-        let u1 = base.base() as f64 / RAND_MAX as f64;
-        let u2 = base.base() as f64 / RAND_MAX as f64;
+        let u1 = base64(base, 0, 0);
+        let u2 = base64(base, 0, 0);
         *v1 = 2.0 * u1 - 1.0;
         *v2 = 2.0 * u2 - 1.0;
         *v1 * (-2.0 * (*s).log10() / (*s)).sqrt()
@@ -166,8 +170,8 @@ fn marsaglia(base: &mut Rand, v1: &mut f64, v2: &mut f64, s: &mut f64, phase: &m
 }
 
 fn pythagoras(base: &mut Rand) -> f64 {
-    let a = base.base() as f64 / (RAND_MAX + 1) as f64;
-    let b = base.base() as f64 / (RAND_MAX + 1) as f64;
+    let a = base64(base, 0, 1);
+    let b = base64(base, 0, 1);
     let c_sqr = a * a + b * b;
     c_sqr.sqrt()
 }
