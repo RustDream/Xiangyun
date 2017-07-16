@@ -9,7 +9,11 @@ impl Flag {
     }
 
     pub fn on(&mut self) {
-        *self = Flag::On(0);
+        self._on(0);
+    }
+
+    pub fn _on(&mut self, num: usize) {
+        *self = Flag::On(num);
     }
 
     pub fn off(&mut self) {

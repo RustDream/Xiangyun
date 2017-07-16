@@ -1,4 +1,5 @@
 use super::base::{BaseRand, RAND_MAX};
+use super::flag::Flag;
 use std::f64::consts::PI;
 
 pub enum Style {
@@ -16,6 +17,8 @@ pub enum JumpStyle {
     DoubleJump,
 }
 
+/// Rand is random number solver  
+/// Please don't assume that the fields are any type  
 pub struct Rand {
     base: Vec<BaseRand>,
     handle: Option<usize>,
@@ -34,14 +37,32 @@ impl Rand {
         }
     }
 
+    pub fn new_multibase(mul: usize) -> Self {
+        let mut foo = Rand::new();
+        let mut bar: Vec<usize> = Vec::new();
+        for _ in 0..mul {
+            bar.push(foo.base());
+        }
+        for _ in 1..mul {
+            foo.new_base();
+        }
+        foo.srand(bar);
+        foo.jump_style(JumpStyle::DoubleJump);
+        foo
+    }
+
     pub fn set_style(&mut self, style: Style) {
         self.style = style;
     }
 
     pub fn srand(&mut self, seed: Vec<usize>) {
         for i in 0..self.base.len() {
-            self.base[i].srand(seed[i]);
+            self._srand(i, seed[i]);
         }
+    }
+
+    pub fn _srand(&mut self, handle: usize, seed: usize) {
+        self.base[handle].srand(seed);
     }
 
     pub fn lazy_srand(&mut self) {
@@ -115,10 +136,12 @@ impl Rand {
                         self.handle = Some(_jump % self.base.len());
                     }
                     JumpStyle::DoubleJump => {
-                        let _gap = self.base();
-                        for _ in 0.._gap {
+                        let mut _gap = Flag::new();
+                        _gap._on(self.base());
+                        while _gap.is_on() {
                             let _jump = self.base();
                             self.handle = Some(_jump % self.base.len());
+                            _gap.down();
                         }
                     }
                     _ => {}
@@ -126,6 +149,12 @@ impl Rand {
             }
             _ => {}
         }
+    }
+
+    pub fn _rand(&mut self) -> f64 {
+        let _return = self.rand();
+        self.jump();
+        _return
     }
 }
 

@@ -1,8 +1,8 @@
 use std::time::SystemTime;
 use super::flag::Flag;
 
-/// RAND_MAX is a const
-/// Please don't assume that it is any value
+/// RAND_MAX is a const  
+/// Please don't assume that it is any value  
 pub const RAND_MAX: usize = 32767;
 
 pub struct BaseRand {
@@ -41,10 +41,10 @@ impl BaseRand {
 }
 
 fn basic(seed: &mut usize) -> usize {
-    let mut _seed = *seed;
-    _seed = (((_seed as u64 * 1103515245) as u32) as u64 + 12345) as usize;
-    *seed = _seed;
-    _seed >> 16 & RAND_MAX
+    let mut _seed = *seed as u32;
+    _seed = (((_seed as u64 * 1103515245) as u32) as u64 + 12345) as u32;
+    *seed = _seed as usize;
+    (_seed as usize) >> 16 & RAND_MAX
 }
 
 fn lazy(seed: &mut usize) -> usize {
