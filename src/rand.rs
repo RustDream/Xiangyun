@@ -151,7 +151,8 @@ impl Rand {
         }
     }
 
-    pub fn _rand(&mut self) -> f64 {
+    /// get a random number for multibase
+    pub fn multirand(&mut self) -> f64 {
         let _return = self.rand();
         self.jump();
         _return
