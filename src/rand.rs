@@ -46,7 +46,7 @@ impl Rand {
         for _ in 1..mul {
             foo.new_base();
         }
-        foo.srand(bar);
+        foo.multisrand(bar);
         foo.jump_style(JumpStyle::DoubleJump);
         foo
     }
@@ -55,14 +55,14 @@ impl Rand {
         self.style = style;
     }
 
-    pub fn srand(&mut self, seed: Vec<usize>) {
-        for i in 0..self.base.len() {
-            self._srand(i, seed[i]);
-        }
+    pub fn srand(&mut self, handle: usize, seed: usize) {
+        self.base[handle].srand(seed);
     }
 
-    pub fn _srand(&mut self, handle: usize, seed: usize) {
-        self.base[handle].srand(seed);
+    pub fn multisrand(&mut self, seed: Vec<usize>) {
+        for i in 0..self.base.len() {
+            self.srand(i, seed[i]);
+        }
     }
 
     pub fn lazy_srand(&mut self) {
@@ -101,6 +101,13 @@ impl Rand {
         }
     }
 
+    /// get a random number for multibase
+    pub fn multirand(&mut self) -> f64 {
+        let _return = self.rand();
+        self.jump();
+        _return
+    }
+
     pub fn base(&mut self) -> usize {
         match self.handle {
             Some(e) => self.base[e].rand(),
@@ -120,6 +127,10 @@ impl Rand {
 
     pub fn del_base(&mut self) -> Option<BaseRand> {
         self.base.pop()
+    }
+
+    pub fn add_base(&mut self, base: BaseRand) {
+        self.base.push(base);
     }
 
     pub fn jump_style(&mut self, style: JumpStyle) {
@@ -149,13 +160,6 @@ impl Rand {
             }
             _ => {}
         }
-    }
-
-    /// get a random number for multibase
-    pub fn multirand(&mut self) -> f64 {
-        let _return = self.rand();
-        self.jump();
-        _return
     }
 }
 
