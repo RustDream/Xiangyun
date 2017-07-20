@@ -63,6 +63,10 @@ impl Rand {
         self.base[handle].srand(seed);
     }
 
+    pub fn get_base_seed(&self, handle: usize) -> usize {
+        self.base[handle].get_seed()
+    }
+
     pub fn multisrand(&mut self, seed: Vec<usize>) {
         for i in 0..self.base.len() {
             self.srand(i, seed[i]);
