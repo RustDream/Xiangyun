@@ -1,4 +1,5 @@
 use super::rand::Rand;
+use super::rand::base::{get_sys_seed, refresh_sys_seed};
 
 #[macro_export]
 macro_rules! randomize {
@@ -16,8 +17,9 @@ macro_rules! impl_rand_trait {
         $(
             impl RandTrait for $t {
                 fn rand() -> Self {
-                    let mut _seed = 0;
-                    
+                    let mut _seed = get_sys_seed();
+                    // FIXME
+                    0 as $t
                 }
             }
         ) *

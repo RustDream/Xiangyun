@@ -4,7 +4,6 @@ extern crate xiangyun;
 use xiangyun::{Rand, RandTrait};
 
 fn main() {
-    randomize!(foo);
-    println!("{}", foo());
+    randomize!();
     println!("{}", f64::rand()/f64::rand());
 }
