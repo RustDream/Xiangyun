@@ -1,4 +1,3 @@
-use super::rand::Rand;
 use super::rand::base::{get_sys_seed, refresh_sys_seed};
 
 #[macro_export]

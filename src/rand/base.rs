@@ -89,7 +89,7 @@ fn _pmrand(seed: &mut usize, a: u64) -> usize {
     *seed
 }
 
-fn time_get() -> isize {
+pub fn time_get() -> isize {
     let sys_time = SystemTime::now();
     let foo_string = format!("{:?}", sys_time);
     let mut seed: isize = 0;

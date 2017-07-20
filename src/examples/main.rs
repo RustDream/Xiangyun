@@ -1,7 +1,8 @@
 #[macro_use]
 extern crate xiangyun;
 
-use xiangyun::{Rand, RandTrait};
+use xiangyun::{RandTrait};
+use xiangyun::rand::base::{refresh_sys_seed, time_get};
 
 fn main() {
     randomize!();
