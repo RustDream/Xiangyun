@@ -7,6 +7,7 @@ pub const RAND_MAX: usize = 32767;
 
 pub struct BaseRand {
     seed: usize,
+    // TODO: Use Flag instead fn(&mut usize) -> usize
     function: fn(&mut usize) -> usize,
 }
 

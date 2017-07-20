@@ -1,4 +1,6 @@
 pub mod rand;
-pub mod flag;
-pub mod base;
+
+#[macro_use]
+pub mod num;
+
 pub use rand::{Rand, Style, JumpStyle};

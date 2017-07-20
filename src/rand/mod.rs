@@ -1,5 +1,8 @@
-use super::base::{BaseRand, RAND_MAX};
-use super::flag::Flag;
+pub mod flag;
+pub mod base;
+
+use self::base::{BaseRand, RAND_MAX};
+use self::flag::Flag;
 use std::f64::consts::PI;
 
 pub enum Style {
@@ -21,6 +24,7 @@ pub enum JumpStyle {
 /// Please don't assume that the fields are any type  
 pub struct Rand {
     base: Vec<BaseRand>,
+    // TODO: Use Flag instead Option<usize>
     handle: Option<usize>,
     style: Style,
     jump: JumpStyle,
