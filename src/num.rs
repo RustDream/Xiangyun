@@ -1,11 +1,8 @@
-use super::rand::base::{get_sys_seed, refresh_sys_seed};
+use super::rand::base::{get_sys_seed, refresh_sys_seed, time_get};
 use super::rand::Rand;
 
-#[macro_export]
-macro_rules! randomize {
-    () => {
-        refresh_sys_seed(time_get() as usize);
-    };
+pub fn randomize() {
+    refresh_sys_seed(time_get() as usize);
 }
 
 pub trait RandTrait {
