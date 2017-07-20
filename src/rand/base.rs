@@ -5,6 +5,20 @@ use super::flag::Flag;
 /// Please don't assume that it is any value  
 pub const RAND_MAX: usize = 32767;
 
+pub static mut SYS_SEED: usize = 1;
+
+pub fn get_sys_seed() -> usize {
+    unsafe {
+        SYS_SEED
+    }
+}
+
+pub fn refresh_sys_seed(_seed: usize) {
+    unsafe {
+        SYS_SEED = _seed;
+    }
+}
+
 pub struct BaseRand {
     seed: usize,
     // TODO: Use Flag instead fn(&mut usize) -> usize
@@ -38,6 +52,10 @@ impl BaseRand {
     pub fn rand(&mut self) -> usize {
         let func = self.function;
         func(&mut self.seed)
+    }
+
+    pub fn get_seed(&self) -> usize {
+        self.seed
     }
 }
 
