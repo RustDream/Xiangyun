@@ -1,8 +1,8 @@
-use super::rand::base::{get_sys_seed, refresh_sys_seed, time_get};
+use super::rand::base::{get_sys_seed, refresh_sys_seed, sys_srand};
 use super::rand::Rand;
 
 pub fn randomize() {
-    refresh_sys_seed(time_get() as usize);
+    sys_srand();
 }
 
 pub trait RandTrait {

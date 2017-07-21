@@ -19,6 +19,10 @@ pub fn refresh_sys_seed(_seed: usize) {
     }
 }
 
+pub fn sys_srand() {
+    refresh_sys_seed(time_get() as usize);
+}
+
 pub struct BaseRand {
     seed: usize,
     // TODO: Use Flag instead fn(&mut usize) -> usize
@@ -75,21 +79,24 @@ fn pmrand(seed: &mut usize) -> usize {
 }
 
 fn _pmrand(seed: &mut usize, a: u64) -> usize {
+    let mut _seed = *seed;
     let m: u64 = 2147483647;
     let q = m / a as u64;
     let r = m % a as u64;
-    let hi = *seed as u64 / q;
-    let lo = *seed as u64 % q;
+    let hi = _seed as u64 / q;
+    let lo = _seed as u64 % q;
     let test = a as u64 * lo - r * hi;
     if test > 0 {
-        *seed = test as usize;
+        _seed = test as usize;
     } else {
-        *seed = (test + m) as usize;
+        _seed = (test + m) as usize;
     }
-    *seed
+    _seed %= RAND_MAX;
+    *seed = _seed;
+    _seed
 }
 
-pub fn time_get() -> isize {
+fn time_get() -> isize {
     let sys_time = SystemTime::now();
     let foo_string = format!("{:?}", sys_time);
     let mut seed: isize = 0;
