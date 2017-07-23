@@ -20,12 +20,11 @@ pub enum JumpStyle {
     DoubleJump,
 }
 
-/// Rand is random number solver  
+/// Solver is random number solver  
 /// Please do not assume that the fields are any type  
 pub struct Solver {
     base: Vec<BaseRand>,
-    // TODO: Use Flag instead Option<usize>
-    handle: Option<usize>,
+    handle: Flag,
     style: Style,
     jump: JumpStyle,
 }
@@ -35,8 +34,7 @@ impl Solver {
     pub fn new() -> Self {
         Solver {
             base: vec![BaseRand::new()],
-            // TODO: Use Flag instead Option<usize>
-            handle: Some(0),
+            handle: Flag::On(0),
             style: Style::Normal,
             jump: JumpStyle::Static,
         }
@@ -128,7 +126,7 @@ impl Solver {
 
     pub fn base(&mut self) -> usize {
         match self.handle {
-            Some(e) => self.base[e].rand(),
+            Flag::On(e) => self.base[e].rand(),
             _ => {
                 let mut _base = 0;
                 for i in 0..self.base.len() {
@@ -157,19 +155,19 @@ impl Solver {
 
     pub fn jump(&mut self) {
         match self.handle {
-            Some(e) => {
+            Flag::On(e) => {
                 match self.jump {
-                    JumpStyle::Next => self.handle = Some((e + 1) % self.base.len()),
+                    JumpStyle::Next => self.handle = Flag::On((e + 1) % self.base.len()),
                     JumpStyle::Jump => {
                         let _jump = self.base();
-                        self.handle = Some(_jump % self.base.len());
+                        self.handle = Flag::On(_jump % self.base.len());
                     }
                     JumpStyle::DoubleJump => {
                         let mut _gap = Flag::new();
-                        _gap._on(self.base());
+                        _gap.on(Some(self.base()));
                         while _gap.is_on() {
                             let _jump = self.base();
-                            self.handle = Some(_jump % self.base.len());
+                            self.handle = Flag::On(_jump % self.base.len());
                             _gap.down();
                         }
                     }

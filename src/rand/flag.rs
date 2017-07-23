@@ -9,26 +9,25 @@ impl Flag {
         Flag::Off
     }
 
-    pub fn on(&mut self) {
-        self._on(0);
-    }
-
-    pub fn _on(&mut self, num: usize) {
-        *self = Flag::On(num);
-    }
-
-    #[allow(dead_code)]
-    pub fn off(&mut self) {
-        *self = Flag::Off;
-    }
-
-    #[allow(dead_code)]
-    pub fn up(&mut self) {
-        match *self {
-            Flag::On(e) => *self = Flag::On(e + 1),
+    pub fn on(&mut self, num: Option<usize>) {
+        match num {
+            Some(e) => *self = Flag::On(e),
             _ => *self = Flag::On(0),
         }
     }
+
+    // #[allow(dead_code)]
+    // pub fn off(&mut self) {
+    //     *self = Flag::Off;
+    // }
+
+    // #[allow(dead_code)]
+    // pub fn up(&mut self) {
+    //     match *self {
+    //         Flag::On(e) => *self = Flag::On(e + 1),
+    //         _ => *self = Flag::On(0),
+    //     }
+    // }
 
     pub fn down(&mut self) {
         match *self {

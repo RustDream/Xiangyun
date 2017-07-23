@@ -100,7 +100,7 @@ fn time_get() -> usize {
     for num in foo_string.chars() {
         match num {
             e @ '0'...'9' => {
-                flag.on();
+                flag.on(None);
                 seed = seed * 10 + (e as u8 - 48) as usize;
                 if seed >= usize::max_value() / 10 - 10 {
                     break;
