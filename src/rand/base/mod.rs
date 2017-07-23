@@ -1,27 +1,11 @@
+pub mod system;
+
 use std::time::SystemTime;
 use super::flag::Flag;
 
 /// RAND_MAX is a const  
 /// Please don't assume that it is any value  
 pub const RAND_MAX: usize = 32767;
-
-static mut SYS_SEED: usize = 1;
-
-pub fn get_sys_seed() -> usize {
-    unsafe {
-        SYS_SEED
-    }
-}
-
-pub fn refresh_sys_seed(_seed: usize) {
-    unsafe {
-        SYS_SEED = _seed;
-    }
-}
-
-pub fn sys_srand() {
-    refresh_sys_seed(time_get());
-}
 
 #[derive(Copy, Clone, Debug)]
 pub struct BaseRand {

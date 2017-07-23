@@ -1,9 +1,9 @@
 extern crate xiangyun;
 
-use xiangyun::{RandTrait, randomize};
+use xiangyun::{RandTrait, system};
 
 fn main() {
-    randomize();
+    system::randomize();
     println!("{}", f64::rand());
     println!("{}", f64::rand());
     println!("{}", f64::rand());

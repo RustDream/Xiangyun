@@ -1,9 +1,5 @@
-use super::rand::base::{get_sys_seed, refresh_sys_seed, sys_srand};
+use super::rand::base::system::{get_seed, refresh_seed};
 use super::rand::Rand;
-
-pub fn randomize() {
-    sys_srand();
-}
 
 pub trait RandTrait {
     fn rand() -> Self;
@@ -16,10 +12,10 @@ macro_rules! impl_rand_trait {
                 fn rand() -> Self {
                     let mut solver = Rand::new();
                     let mut _base = solver.get_base(0).unwrap();
-                    _base.srand(get_sys_seed());
+                    _base.srand(get_seed());
                     solver.set_base(0, _base);
                     let _return = solver.rand();
-                    refresh_sys_seed(solver.get_base(0).unwrap().get_seed());                   
+                    refresh_seed(solver.get_base(0).unwrap().get_seed());                   
                     _return as $t
                 }
             }

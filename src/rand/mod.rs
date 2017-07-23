@@ -21,7 +21,7 @@ pub enum JumpStyle {
 }
 
 /// Rand is random number solver  
-/// Please don't assume that the fields are any type  
+/// Please do not assume that the fields are any type  
 pub struct Rand {
     base: Vec<BaseRand>,
     // TODO: Use Flag instead Option<usize>
