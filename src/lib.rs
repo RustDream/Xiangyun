@@ -1,8 +1,8 @@
 //! Xiangyun is the crate for random with Rust  
 
 // TODO: remove clippy before publish 
-#![cfg_attr(feature="clippy", feature(plugin))]
-#![cfg_attr(feature="clippy", plugin(clippy))]
+// #![cfg_attr(feature="clippy", feature(plugin))]
+// #![cfg_attr(feature="clippy", plugin(clippy))]
 
 pub mod rand;
 pub mod num;

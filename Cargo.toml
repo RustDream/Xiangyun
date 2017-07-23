@@ -16,6 +16,6 @@ path = "./src/lib.rs"
 name = "main"
 path = "./src/examples/main.rs"
 
-[dependencies]
+# [dependencies]
 # Remove clippy before publish
-clippy = {version = "*", optional = true}
+# clippy = {version = "*", optional = true}

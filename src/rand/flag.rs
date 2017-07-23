@@ -30,22 +30,20 @@ impl Flag {
     // }
 
     pub fn down(&mut self) {
-        match *self {
-            Flag::On(e) => {
-                if e == 0 {
-                    *self = Flag::Off
-                } else {
-                    *self = Flag::On(e - 1)
-                }
+        if let Flag::On(e) = *self {
+            if e == 0 {
+                *self = Flag::Off
+            } else {
+                *self = Flag::On(e - 1)
             }
-            _ => {}
         }
     }
 
     pub fn is_on(&self) -> bool {
-        match *self {
-            Flag::On(_) => true,
-            _ => false,
+        if let Flag::On(_) = *self {
+            true
+        } else {
+            false
         }
     }
 }

@@ -1,3 +1,5 @@
+// cargo build --features "clippy"
+
 extern crate xiangyun;
 
 use xiangyun::{Rand, system};

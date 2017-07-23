@@ -3,7 +3,7 @@ pub mod system;
 use std::time::SystemTime;
 use super::flag::Flag;
 
-/// RAND_MAX is a const  
+/// `RAND_MAX` is a const  
 /// Please don't assume that it is any value  
 pub const RAND_MAX: usize = 32767;
 
@@ -57,6 +57,12 @@ impl BaseRand {
 
     pub fn get_seed(&self) -> usize {
         self.seed
+    }
+}
+
+impl Default for BaseRand {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

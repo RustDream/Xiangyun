@@ -42,17 +42,17 @@ impl Solver {
 
     /// Insert a new base
     pub fn new_multibase(mul: usize) -> Self {
-        let mut foo = Solver::new();
-        let mut bar: Vec<usize> = Vec::new();
+        let mut _base = Solver::new();
+        let mut _seed: Vec<usize> = Vec::new();
         for _ in 0..mul {
-            bar.push(foo.base());
+            _seed.push(_base.base());
         }
         for _ in 1..mul {
-            foo.new_base();
+            _base.new_base();
         }
-        foo.multisrand(bar);
-        foo.jump_style(JumpStyle::DoubleJump);
-        foo
+        _base.multisrand(_seed);
+        _base.jump_style(JumpStyle::DoubleJump);
+        _base
     }
 
     /// Set random solver style
@@ -79,8 +79,10 @@ impl Solver {
 
     /// Set the random seed
     pub fn multisrand(&mut self, seed: Vec<usize>) {
-        for i in 0..self.base.len() {
-            self.get_base(i).unwrap().srand(seed[i]);
+        for (i, item) in seed.iter().enumerate() {
+            let mut _base = BaseRand::new();
+            _base.srand(*item);
+            self.set_base(i, _base);
         }
     }
 
@@ -154,28 +156,31 @@ impl Solver {
     }
 
     pub fn jump(&mut self) {
-        match self.handle {
-            Flag::On(e) => {
-                match self.jump {
-                    JumpStyle::Next => self.handle = Flag::On((e + 1) % self.base.len()),
-                    JumpStyle::Jump => {
+        if let Flag::On(e) = self.handle {           
+            match self.jump {
+                JumpStyle::Next => self.handle = Flag::On((e + 1) % self.base.len()),
+                JumpStyle::Jump => {
+                    let _jump = self.base();
+                    self.handle = Flag::On(_jump % self.base.len());
+                }
+                JumpStyle::DoubleJump => {
+                    let mut _gap = Flag::new();
+                    _gap.on(Some(self.base()));
+                    while _gap.is_on() {
                         let _jump = self.base();
                         self.handle = Flag::On(_jump % self.base.len());
+                        _gap.down();
                     }
-                    JumpStyle::DoubleJump => {
-                        let mut _gap = Flag::new();
-                        _gap.on(Some(self.base()));
-                        while _gap.is_on() {
-                            let _jump = self.base();
-                            self.handle = Flag::On(_jump % self.base.len());
-                            _gap.down();
-                        }
-                    }
-                    _ => {}
                 }
+                _ => {}
             }
-            _ => {}
         }
+    }
+}
+
+impl Default for Solver {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
