@@ -15,8 +15,9 @@ macro_rules! impl_rand_trait {
             impl RandTrait for $t {
                 fn rand() -> Self {
                     let mut solver = Rand::new();
-                    // FIXME
-                    solver.get_base(0).unwrap().srand(get_sys_seed());
+                    let mut _base = solver.get_base(0).unwrap();
+                    _base.srand(get_sys_seed());
+                    solver.set_base(0, _base);
                     let _return = solver.rand();
                     refresh_sys_seed(solver.get_base(0).unwrap().get_seed());                   
                     _return as $t

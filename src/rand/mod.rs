@@ -71,6 +71,14 @@ impl Rand {
         }   
     }
 
+    pub fn set_base(&mut self, handle: usize, base: BaseRand) -> bool {
+        if handle<self.base.len() {
+            self.base[handle] = base;
+            return true;
+        }
+        false
+    }
+
     /// Set the random seed
     pub fn multisrand(&mut self, seed: Vec<usize>) {
         for i in 0..self.base.len() {
