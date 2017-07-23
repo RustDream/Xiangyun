@@ -1,5 +1,5 @@
-mod flag;
 pub mod base;
+mod flag;
 
 use self::base::{BaseRand, RAND_MAX};
 use self::flag::Flag;
