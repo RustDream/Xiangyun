@@ -31,7 +31,8 @@ pub struct Rand {
 }
 
 impl Rand {
-    // TODO: Need a private function to get the handle base
+    // TODO: Need a public function to get the handle base
+    // TODO: Remove Middle Man
 
     /// A lazy way to get a random solver
     pub fn new() -> Self {

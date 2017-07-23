@@ -20,7 +20,7 @@ pub fn refresh_sys_seed(_seed: usize) {
 }
 
 pub fn sys_srand() {
-    refresh_sys_seed(time_get() as usize);
+    refresh_sys_seed(time_get());
 }
 
 pub struct BaseRand {
@@ -32,7 +32,7 @@ pub struct BaseRand {
 impl BaseRand {
     pub fn new() -> Self {
         BaseRand {
-            seed: time_get() as usize,
+            seed: time_get(),
             function: basic,
         }
     }
@@ -50,7 +50,7 @@ impl BaseRand {
     }
 
     pub fn lazy_srand(&mut self) {
-        self.srand(time_get() as usize);
+        self.srand(time_get());
     }
 
     pub fn rand(&mut self) -> usize {
@@ -79,34 +79,33 @@ fn pmrand(seed: &mut usize) -> usize {
 }
 
 fn _pmrand(seed: &mut usize, a: u64) -> usize {
-    let mut _seed = *seed;
+    let mut _seed = *seed as u64;
     let m: u64 = 2147483647;
-    let q = m / a as u64;
-    let r = m % a as u64;
-    let hi = _seed as u64 / q;
-    let lo = _seed as u64 % q;
-    let test = a as u64 * lo - r * hi;
+    let q = m / a;
+    let r = m % a;
+    let hi = _seed / q;
+    let lo = _seed % q;
+    let test = a * lo - r * hi;
     if test > 0 {
-        _seed = test as usize;
+        _seed = test;
     } else {
-        _seed = (test + m) as usize;
+        _seed = test + m;
     }
-    _seed %= RAND_MAX;
-    *seed = _seed;
-    _seed
+    _seed %= RAND_MAX as u64;
+    *seed = _seed as usize;
+    _seed as usize
 }
 
-fn time_get() -> isize {
-    let sys_time = SystemTime::now();
-    let foo_string = format!("{:?}", sys_time);
-    let mut seed: isize = 0;
+fn time_get() -> usize {
+    let foo_string = format!("{:?}", SystemTime::now());
+    let mut seed: usize = 0;
     let mut flag = Flag::new();
     for num in foo_string.chars() {
         match num {
             e @ '0'...'9' => {
                 flag.on();
-                seed = seed * 10 + (e as u8 - 48) as isize;
-                if seed >= (isize::max_value() / 10 - 10) as isize {
+                seed = seed * 10 + (e as u8 - 48) as usize;
+                if seed >= usize::max_value() / 10 - 10 {
                     break;
                 }
             }
