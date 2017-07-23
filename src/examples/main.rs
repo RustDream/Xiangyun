@@ -1,6 +1,6 @@
 extern crate xiangyun;
 
-use xiangyun::{RandTrait, system};
+use xiangyun::{Rand, system};
 
 fn main() {
     system::randomize();

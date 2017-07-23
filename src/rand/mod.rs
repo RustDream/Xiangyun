@@ -22,7 +22,7 @@ pub enum JumpStyle {
 
 /// Rand is random number solver  
 /// Please do not assume that the fields are any type  
-pub struct Rand {
+pub struct Solver {
     base: Vec<BaseRand>,
     // TODO: Use Flag instead Option<usize>
     handle: Option<usize>,
@@ -30,10 +30,10 @@ pub struct Rand {
     jump: JumpStyle,
 }
 
-impl Rand {
+impl Solver {
     /// A lazy way to get a random solver
     pub fn new() -> Self {
-        Rand {
+        Solver {
             base: vec![BaseRand::new()],
             // TODO: Use Flag instead Option<usize>
             handle: Some(0),
@@ -44,7 +44,7 @@ impl Rand {
 
     /// Insert a new base
     pub fn new_multibase(mul: usize) -> Self {
-        let mut foo = Rand::new();
+        let mut foo = Solver::new();
         let mut bar: Vec<usize> = Vec::new();
         for _ in 0..mul {
             bar.push(foo.base());
@@ -181,11 +181,11 @@ impl Rand {
     }
 }
 
-fn base64(base: &mut Rand, base_offset: usize, max_offset: usize) -> f64 {
+fn base64(base: &mut Solver, base_offset: usize, max_offset: usize) -> f64 {
     (base.base() + base_offset) as f64 / (RAND_MAX + base_offset + max_offset) as f64
 }
 
-fn gauss(base: &mut Rand, nsum: u32) -> f64 {
+fn gauss(base: &mut Solver, nsum: u32) -> f64 {
     let mut x = 0.0;
     for _ in 0..nsum {
         x += base64(base, 0, 0);
@@ -195,7 +195,7 @@ fn gauss(base: &mut Rand, nsum: u32) -> f64 {
     x
 }
 
-fn bmgauss(base: &mut Rand, u: &mut f64, v: &mut f64, phase: &mut bool) -> f64 {
+fn bmgauss(base: &mut Solver, u: &mut f64, v: &mut f64, phase: &mut bool) -> f64 {
     if *phase {
         *phase = false;
         *u = base64(base, 1, 1);
@@ -207,7 +207,7 @@ fn bmgauss(base: &mut Rand, u: &mut f64, v: &mut f64, phase: &mut bool) -> f64 {
     }
 }
 
-fn marsaglia(base: &mut Rand, v1: &mut f64, v2: &mut f64, s: &mut f64, phase: &mut bool) -> f64 {
+fn marsaglia(base: &mut Solver, v1: &mut f64, v2: &mut f64, s: &mut f64, phase: &mut bool) -> f64 {
     if *phase {
         *phase = false;
         let u1 = base64(base, 0, 0);
@@ -221,7 +221,7 @@ fn marsaglia(base: &mut Rand, v1: &mut f64, v2: &mut f64, s: &mut f64, phase: &m
     }
 }
 
-fn pythagoras(base: &mut Rand) -> f64 {
+fn pythagoras(base: &mut Solver) -> f64 {
     let a = base64(base, 0, 1);
     let b = base64(base, 0, 1);
     let c_sqr = a * a + b * b;

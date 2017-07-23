@@ -3,6 +3,6 @@
 pub mod rand;
 pub mod num;
 
-pub use rand::{Rand, Style, JumpStyle};
+pub use rand::{Solver, Style, JumpStyle};
 pub use rand::base::{system, RAND_MAX};
-pub use num::RandTrait;
+pub use num::Rand;

@@ -1,16 +1,16 @@
 use super::rand::base::system::{get_seed, refresh_seed};
-use super::rand::Rand;
+use super::rand::Solver;
 
-pub trait RandTrait {
+pub trait Rand {
     fn rand() -> Self;
 }
 
 macro_rules! impl_rand_trait {
     ($($t: ty)*) => (
         $(
-            impl RandTrait for $t {
+            impl Rand for $t {
                 fn rand() -> Self {
-                    let mut solver = Rand::new();
+                    let mut solver = Solver::new();
                     let mut _base = solver.get_base(0).unwrap();
                     _base.srand(get_seed());
                     solver.set_base(0, _base);
