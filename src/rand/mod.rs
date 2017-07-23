@@ -103,7 +103,10 @@ impl Solver {
                 let mut _u = u;
                 let mut _v = v;
                 let mut _phase = phase;
-                let _return = bmgauss(self, &mut _u, &mut _v, &mut _phase);
+                let _return = bmgauss(self,
+                                      &mut _u,
+                                      &mut _v,
+                                      &mut _phase);
                 self.style = Style::BMgauss(_u, _v, _phase);
                 _return
             }
@@ -112,8 +115,15 @@ impl Solver {
                 let mut _v2 = v2;
                 let mut _s = s;
                 let mut _phase = phase;
-                let _return = marsaglia(self, &mut _v1, &mut _v2, &mut _s, &mut _phase);
-                self.style = Style::Marsaglia(_v1, _v2, _s, _phase);
+                let _return = marsaglia(self,
+                                        &mut _v1,
+                                        &mut _v2,
+                                        &mut _s,
+                                        &mut _phase);
+                self.style = Style::Marsaglia(_v1,
+                                              _v2,
+                                              _s,
+                                              _phase);
                 _return
             }
         }
@@ -184,7 +194,9 @@ impl Default for Solver {
     }
 }
 
-fn base64(base: &mut Solver, base_offset: usize, max_offset: usize) -> f64 {
+fn base64(base: &mut Solver,
+          base_offset: usize,
+          max_offset: usize) -> f64 {
     (base.base() + base_offset) as f64 / (RAND_MAX + base_offset + max_offset) as f64
 }
 
@@ -210,7 +222,11 @@ fn bmgauss(base: &mut Solver, u: &mut f64, v: &mut f64, phase: &mut bool) -> f64
     }
 }
 
-fn marsaglia(base: &mut Solver, v1: &mut f64, v2: &mut f64, s: &mut f64, phase: &mut bool) -> f64 {
+fn marsaglia(base: &mut Solver,
+             v1: &mut f64,
+             v2: &mut f64,
+             s: &mut f64,
+             phase: &mut bool) -> f64 {
     if *phase {
         *phase = false;
         let u1 = base64(base, 0, 0);
