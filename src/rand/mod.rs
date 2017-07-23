@@ -1,4 +1,4 @@
-pub mod flag;
+mod flag;
 pub mod base;
 
 use self::base::{BaseRand, RAND_MAX};
@@ -31,16 +31,20 @@ pub struct Rand {
 }
 
 impl Rand {
-    /// a lazy way to get a random solver
+    // TODO: Need a private function to get the handle base
+
+    /// A lazy way to get a random solver
     pub fn new() -> Self {
         Rand {
             base: vec![BaseRand::new()],
+            // TODO: Use Flag instead Option<usize>
             handle: Some(0),
             style: Style::Normal,
             jump: JumpStyle::Static,
         }
     }
 
+    /// Insert a new base
     pub fn new_multibase(mul: usize) -> Self {
         let mut foo = Rand::new();
         let mut bar: Vec<usize> = Vec::new();
@@ -55,24 +59,29 @@ impl Rand {
         foo
     }
 
+    /// Set random solver style
     pub fn set_style(&mut self, style: Style) {
         self.style = style;
     }
 
+    /// Set the random seed for handle base
     pub fn srand(&mut self, handle: usize, seed: usize) {
         self.base[handle].srand(seed);
     }
 
+    /// Get the random seed for handle base
     pub fn get_base_seed(&self, handle: usize) -> usize {
         self.base[handle].get_seed()
     }
 
+    /// Set the random seed
     pub fn multisrand(&mut self, seed: Vec<usize>) {
         for i in 0..self.base.len() {
             self.srand(i, seed[i]);
         }
     }
 
+    /// Lazy way to set the random seed
     pub fn lazy_srand(&mut self) {
         for i in 0..self.base.len() {
             self.base[i].lazy_srand();
@@ -83,7 +92,7 @@ impl Rand {
         self.base[handle].set_function(style);
     }
 
-    /// get a random number
+    /// Get a random number
     pub fn rand(&mut self) -> f64 {
         match self.style {
             Style::Normal => self.base() as f64,
@@ -109,7 +118,7 @@ impl Rand {
         }
     }
 
-    /// get a random number for multibase
+    /// Get a random number for multibase
     pub fn multirand(&mut self) -> f64 {
         let _return = self.rand();
         self.jump();
