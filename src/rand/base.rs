@@ -23,7 +23,7 @@ pub fn sys_srand() {
     refresh_sys_seed(time_get());
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct BaseRand {
     seed: usize,
     function: Flag,
@@ -55,15 +55,20 @@ impl BaseRand {
 
     pub fn rand(&mut self) -> usize {
         let func = self.function;
+        let mut _seed = self.seed;
+        let mut _return = 0;
         match func {
             Flag::On(e) => {
                 match e {    
-                    1 => pmrand(&mut self.seed),
-                    _ => basic(&mut self.seed),
+                    0 => _return = basic(&mut _seed),
+                    1 => _return = pmrand(&mut _seed),
+                    _ => _return = lazy(&mut _seed),
                 }
             }
-            Flag::Off => lazy(&mut self.seed),
+            Flag::Off => _return = lazy(&mut _seed),
         }
+        self.srand(_seed);
+        _return
     }
 
     pub fn get_seed(&self) -> usize {

@@ -14,12 +14,11 @@ macro_rules! impl_rand_trait {
         $(
             impl RandTrait for $t {
                 fn rand() -> Self {
-                    let mut _seed = get_sys_seed();
                     let mut solver = Rand::new();
-                    solver.get_base(0).unwrap().srand(_seed);
+                    // FIXME
+                    solver.get_base(0).unwrap().srand(get_sys_seed());
                     let _return = solver.rand();
-                    _seed = solver.get_base(0).unwrap().get_seed();
-                    refresh_sys_seed(_seed);
+                    refresh_sys_seed(solver.get_base(0).unwrap().get_seed());                   
                     _return as $t
                 }
             }

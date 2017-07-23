@@ -1,4 +1,4 @@
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum Flag {
     On(usize),
     Off,
@@ -17,10 +17,12 @@ impl Flag {
         *self = Flag::On(num);
     }
 
+    #[allow(dead_code)]
     pub fn off(&mut self) {
         *self = Flag::Off;
     }
 
+    #[allow(dead_code)]
     pub fn up(&mut self) {
         match *self {
             Flag::On(e) => *self = Flag::On(e + 1),
