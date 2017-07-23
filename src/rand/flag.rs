@@ -1,3 +1,4 @@
+#[derive(Copy, Clone)]
 pub enum Flag {
     On(usize),
     Off,

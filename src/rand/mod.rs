@@ -31,9 +31,6 @@ pub struct Rand {
 }
 
 impl Rand {
-    // TODO: Need a public function to get the handle base
-    // TODO: Remove Middle Man
-
     /// A lazy way to get a random solver
     pub fn new() -> Self {
         Rand {
@@ -65,20 +62,19 @@ impl Rand {
         self.style = style;
     }
 
-    /// Set the random seed for handle base
-    pub fn srand(&mut self, handle: usize, seed: usize) {
-        self.base[handle].srand(seed);
-    }
-
-    /// Get the random seed for handle base
-    pub fn get_base_seed(&self, handle: usize) -> usize {
-        self.base[handle].get_seed()
+    /// Get handle base
+    pub fn get_base(&self, handle: usize) -> Option<BaseRand> {
+        if handle<self.base.len() {
+            Some(self.base[handle])
+        } else {
+            None
+        }   
     }
 
     /// Set the random seed
     pub fn multisrand(&mut self, seed: Vec<usize>) {
         for i in 0..self.base.len() {
-            self.srand(i, seed[i]);
+            self.get_base(i).unwrap().srand(seed[i]);
         }
     }
 
@@ -87,10 +83,6 @@ impl Rand {
         for i in 0..self.base.len() {
             self.base[i].lazy_srand();
         }
-    }
-
-    pub fn set_function(&mut self, handle: usize, style: &str) {
-        self.base[handle].set_function(style);
     }
 
     /// Get a random number

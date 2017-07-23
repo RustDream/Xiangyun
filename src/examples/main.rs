@@ -6,4 +6,6 @@ fn main() {
     randomize();
     println!("{}", f64::rand());
     println!("{}", f64::rand());
+    println!("{}", f64::rand());
+    println!("{}", f64::rand());
 }
