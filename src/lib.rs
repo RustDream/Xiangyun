@@ -6,7 +6,9 @@
 
 pub mod rand;
 pub mod num;
+pub mod chaos;
 
 pub use rand::{Solver, Style, JumpStyle};
 pub use rand::base::{system, RAND_MAX};
 pub use num::Rand;
+pub use chaos::Chaos;

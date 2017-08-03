@@ -2,12 +2,11 @@
 
 extern crate xiangyun;
 
-use xiangyun::{Rand, system};
+use xiangyun::{system, Chaos};
 
 fn main() {
     system::randomize();
-    println!("{}", f64::rand());
-    println!("{}", f64::rand());
-    println!("{}", f64::rand());
-    println!("{}", f64::rand());
+    let mut foo = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    foo.chaos();
+    println!("{:?}", foo);
 }

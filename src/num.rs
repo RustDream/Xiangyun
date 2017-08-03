@@ -26,3 +26,22 @@ macro_rules! impl_rand_trait {
 impl_rand_trait!{u8 u16 u32 u64 usize}
 impl_rand_trait!{i8 i16 i32 i64 isize}
 impl_rand_trait!{f32 f64}
+
+impl Rand for char {
+    fn rand() -> Self {
+        (u8::rand() % 128) as char
+    }
+}
+
+impl Rand for String {
+    fn rand() -> Self {
+        let mut result = "".to_string();
+        loop {
+            let _char = char::rand();
+            if _char == '\0' {
+                return result;
+            }
+            result += &_char.to_string();
+        }
+    }
+}
