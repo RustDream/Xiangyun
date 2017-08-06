@@ -40,19 +40,18 @@ impl BaseRand {
     pub fn rand(&mut self) -> usize {
         let func = self.function;
         let mut _seed = self.seed;
-        let mut _return = 0;
-        match func {
-            Flag::On(e) => {
-                match e {    
-                    0 => _return = basic(&mut _seed),
-                    1 => _return = pmrand(&mut _seed),
-                    _ => _return = lazy(&mut _seed),
-                }
+        let mut result = 0;
+        if let Flag::On(e) = func {
+            match e {    
+                0 => result = basic(&mut _seed),
+                1 => result = pmrand(&mut _seed),
+                _ => result = lazy(&mut _seed),
             }
-            Flag::Off => _return = lazy(&mut _seed),
+        } else {
+            result = lazy(&mut _seed);
         }
         self.srand(_seed);
-        _return
+        result
     }
 
     pub fn get_seed(&self) -> usize {
@@ -99,6 +98,7 @@ fn _pmrand(seed: &mut usize, a: u64) -> usize {
     _seed as usize
 }
 
+#[doc(hidden)]
 fn time_get() -> usize {
     let foo_string = format!("{:?}", SystemTime::now());
     let mut seed: usize = 0;

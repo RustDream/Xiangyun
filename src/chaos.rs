@@ -24,3 +24,32 @@ where T: Copy + Clone {
         *self = result;
     }
 }
+
+impl<T> Chaos for [T]
+where T: Copy + Clone {
+    fn chaos(&mut self) {
+        let mut _self: Vec<T> = Vec::new();
+        for value in self.iter() {
+            _self.push(*value);
+        }
+        _self.chaos();
+        for (id, value) in _self.iter().enumerate() {
+            self[id] = value.clone();
+        }
+    }
+}
+
+impl Chaos for String {
+    fn chaos(&mut self) {
+        let mut result = "".to_string();
+        let mut _self: Vec<char> = Vec::new();
+        for value in self.chars() {
+            _self.push(value);
+        }
+        _self.chaos();
+        for value in _self.iter() {
+            result += &*value.to_string();
+        }
+        *self = result;
+    }
+}
