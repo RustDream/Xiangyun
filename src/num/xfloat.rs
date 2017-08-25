@@ -3,7 +3,7 @@
 pub trait XFloat {
      fn get_fractional_part(&self) -> Self;
      fn get_integer_part(&self) -> Self;
-     fn get_fractional_digit(&self) -> u8;
+     fn get_fractional_digit(&self) -> usize;
 }
 
 impl XFloat for f32 {
@@ -16,7 +16,7 @@ impl XFloat for f32 {
         *self as i64 as Self
     }
 
-    fn get_fractional_digit(&self) -> u8 {
+    fn get_fractional_digit(&self) -> usize {
         let _self_fractional_string = format!("{}", self.get_fractional_part());
         _self_fractional_string.len() - 2
     }
