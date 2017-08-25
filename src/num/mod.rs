@@ -1,3 +1,5 @@
+pub mod xfloat;
+
 use super::rand::base::system::{get_seed, refresh_seed};
 use super::rand::Solver;
 use super::rand::base::RAND_MAX;

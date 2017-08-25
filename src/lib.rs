@@ -11,4 +11,5 @@ pub mod chaos;
 pub use rand::{Solver, Style, JumpStyle};
 pub use rand::base::{system, RAND_MAX};
 pub use num::Rand;
+pub use num::xfloat::XFloat;
 pub use chaos::Chaos;

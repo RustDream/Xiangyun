@@ -2,7 +2,7 @@
 
 extern crate xiangyun;
 
-use xiangyun::{system, Chaos};
+use xiangyun::{system, Chaos, XFloat};
 
 fn main() {
     system::randomize();
@@ -15,4 +15,6 @@ fn main() {
     let mut mystr = "测试字符串".to_string();
     mystr.chaos();
     println!("{:?}", mystr);
+    println!("{}", 5.5.get_fractional_part());
+    println!("{}", 5.5.get_fractional_digit());
 }
